@@ -9,9 +9,10 @@ import SwiftUI
 
 @main
 struct Just_PuppyApp: App {
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplashView()
         }
     }
 }
