@@ -10,11 +10,13 @@ import SwiftUI
 struct JPTabView<Content: View>: View {
     
     @Binding var selectedTab: JPTab
+    let action: () -> Void
     let content: Content
     @State private var tabs: [JPTab] = []
     
-    init(selectedTab: Binding<JPTab>, @ViewBuilder content: () -> Content) {
+    init(selectedTab: Binding<JPTab>, action: @escaping () -> Void,  @ViewBuilder content: () -> Content) {
         self._selectedTab = selectedTab
+        self.action = action
         self.content = content()
     }
     
@@ -23,7 +25,7 @@ struct JPTabView<Content: View>: View {
             ZStack {
                 content
             }
-            JPTabBarView(tabs: tabs, selectedTab: $selectedTab)
+            JPTabBarView(tabs: tabs, selectedTab: $selectedTab, action: action)
         }
         .onPreferenceChange(JPTabBarPreferenceKey.self) { tabs = $0 }
     }
@@ -31,7 +33,7 @@ struct JPTabView<Content: View>: View {
 
 // MARK: - Preview
 #Preview {
-    JPTabView(selectedTab: .constant(.home)) {
+    JPTabView(selectedTab: .constant(.home), action: {}) {
         Color.red
     }
 }

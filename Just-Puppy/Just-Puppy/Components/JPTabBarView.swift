@@ -11,6 +11,7 @@ struct JPTabBarView: View {
     
     let tabs: [JPTab]
     @Binding var selectedTab: JPTab
+    let action: () -> Void
     
     var body: some View {
         ZStack {
@@ -24,7 +25,7 @@ struct JPTabBarView: View {
 extension JPTabBarView {
     
     private var plusView: some View {
-        Button(action: {}) {
+        Button(action: { action() }) {
             Image(systemName: "plus")
                 .resizable()
                 .frame(width: 14, height: 14)
@@ -45,6 +46,7 @@ extension JPTabBarView {
                     Spacer().frame(width: 80)
                 }
                 tabView(for: tab)
+                    .contentShape(Rectangle())
                     .onTapGesture { switchToTab(tab) }
             }
         }
@@ -76,6 +78,6 @@ extension JPTabBarView {
 #Preview {
     VStack {
         Spacer()
-        JPTabBarView(tabs: [.home, .favorites, .statistics, .settings], selectedTab: .constant(.home))
+        JPTabBarView(tabs: [.home, .favorites, .statistics, .settings], selectedTab: .constant(.home)) {}
     }
 }

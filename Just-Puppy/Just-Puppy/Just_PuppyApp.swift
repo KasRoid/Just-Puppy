@@ -9,14 +9,19 @@ import SwiftUI
 
 @main
 struct Just_PuppyApp: App {
-    
-    @State private var selectedTab: JPTab = .home
+
     @State private var initialized = false
+    @State private var selectedTab: JPTab = .home
+    @State private var isCameraPresented = false
+    @State private var capturedImage: UIImage?
     
     var body: some Scene {
         WindowGroup {
             if initialized {
                 tabView
+                    .fullScreenCover(isPresented: $isCameraPresented) {
+                        CameraView(capturedImage: $capturedImage)
+                    }
             } else {
                 SplashView(initialized: $initialized)
             }
@@ -28,7 +33,7 @@ struct Just_PuppyApp: App {
 extension Just_PuppyApp {
     
     private var tabView: some View {
-        JPTabView(selectedTab: $selectedTab) {
+        JPTabView(selectedTab: $selectedTab, action: showCamera) {
             homeView
             favoritesView
         }
@@ -44,5 +49,13 @@ extension Just_PuppyApp {
     private var favoritesView: some View {
         FavoritesView()
             .tabBarItem(.favorites, selectedTab: $selectedTab)
+    }
+}
+
+// MARK: - Private Functions
+extension Just_PuppyApp {
+    
+    private func showCamera() {
+        isCameraPresented = true
     }
 }
