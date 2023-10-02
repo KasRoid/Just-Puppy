@@ -10,9 +10,17 @@ import SwiftUI
 @main
 struct Just_PuppyApp: App {
     
+    @State var initialized = false
+    
     var body: some Scene {
         WindowGroup {
-            SplashView()
+            if initialized {
+                MainView(store: .init(initialState: .init(),
+                                      reducer: { MainReducer() })
+                )
+            } else {
+                SplashView(initialized: $initialized)
+            }
         }
     }
 }

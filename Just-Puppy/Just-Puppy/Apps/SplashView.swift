@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SplashView: View {
     
+    @Binding var initialized: Bool
+    
     var body: some View {
         VStack {
             Spacer()
@@ -24,12 +26,17 @@ struct SplashView: View {
             Spacer()
         }
         .padding()
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                initialized = true
+            }
+        }
     }
 }
 
 // MARK: - PreviewProvider
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        SplashView()
+        SplashView(initialized: .constant(false))
     }
 }
