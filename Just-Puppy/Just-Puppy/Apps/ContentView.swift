@@ -31,6 +31,7 @@ extension ContentView {
             .fullScreenCover(isPresented: viewState.binding(get: { $0.isCameraPresented },
                                                             send: ContentReducer.Action.hideCamera)) {
                 CameraView()
+                    .ignoresSafeArea()
             }
     }
     
