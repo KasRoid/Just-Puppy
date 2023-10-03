@@ -16,9 +16,8 @@ struct CameraView: UIViewControllerRepresentable {
     var previewLayer : AVCaptureVideoPreviewLayer!
     
     func makeUIViewController(context: Context) -> UIViewController {
-        let controller = CameraViewController(store: Store(initialState: .init(),
-                                                           reducer: { CameraReducer() })
-        )
+        let store = Store(initialState: .init(), reducer:  { CameraReducer() })
+        let controller = CameraViewController(store: store, cancelAction: { dismiss() })
         return controller
     }
     

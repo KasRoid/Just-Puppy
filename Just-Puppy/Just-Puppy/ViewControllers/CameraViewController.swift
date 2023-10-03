@@ -12,15 +12,17 @@ import UIKit
 
 final class CameraViewController: UIViewController {
     
-    private var previewLayer: AVCaptureVideoPreviewLayer?
-    private let captureButton = UIButton(type: .system)
+    private let cancelButton = UIButton()
+    private let captureButton = UIButton()
     
     private let captureSession = AVCaptureSession()
     private let viewStore: ViewStore<CameraReducer.State, CameraReducer.Action>
+    private let cancelAction: () -> Void
     private var cancellables = Set<AnyCancellable>()
     
-    init(store: StoreOf<CameraReducer>) {
+    init(store: StoreOf<CameraReducer>, cancelAction: @escaping () -> Void) {
         viewStore = ViewStore(store, observe: { $0 })
+        self.cancelAction = cancelAction
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -36,12 +38,21 @@ final class CameraViewController: UIViewController {
         setupVideoDataOutput()
         startCaptureSession()
     }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        stopCaptureSession()
+    }
 }
 
 // MARK: - Bindings
 extension CameraViewController {
     
     private func bindUI() {
+        cancelButton.publisher(for: .touchUpInside)
+            .sink { [weak self] _ in self?.cancelAction() }
+            .store(in: &cancellables)
+        
         captureButton.publisher(for: .touchUpInside)
             .sink { [weak self] _ in self?.viewStore.send(.takePhoto) }
             .store(in: &cancellables)
@@ -87,6 +98,13 @@ extension CameraViewController {
         guard captureSession.canAddOutput(dataOutput) else { return }
         captureSession.addOutput(dataOutput)
     }
+    
+    private func stopCaptureSession() {
+        guard captureSession.isRunning else { return }
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            self?.captureSession.stopRunning()
+        }
+    }
 }
 
 // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
@@ -109,24 +127,44 @@ extension CameraViewController {
     
     private func setupUI() {
         setupPreviewLayer()
+        setupCancelButton()
         setupCaptureButton()
     }
     
     private func setupPreviewLayer() {
-        previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        guard let previewLayer else { return }
+        let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         view.layer.insertSublayer(previewLayer, below: view.layer)
         previewLayer.frame = view.layer.frame
+    }
+    
+    private func setupCancelButton() {
+        view.addSubview(cancelButton)
+        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        var configuration = UIButton.Configuration.plain()
+        configuration.title = "Cancel"
+        configuration.baseForegroundColor = .mainRed
+        cancelButton.configuration = configuration
+        
+        NSLayoutConstraint.activate([
+            cancelButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            cancelButton.leadingAnchor.constraint(equalTo: view.leadingAnchor)
+        ])
     }
     
     private func setupCaptureButton() {
         view.addSubview(captureButton)
         captureButton.translatesAutoresizingMaskIntoConstraints = false
-        captureButton.setTitle("Capture", for: .normal)
+        var configuration = UIButton.Configuration.filled()
+        configuration.cornerStyle = .capsule
+        configuration.baseBackgroundColor = .mainRed
+        configuration.image = UIImage(systemName: "pawprint.fill")
+        captureButton.configuration = configuration
         
         NSLayoutConstraint.activate([
-            captureButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            captureButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            captureButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            captureButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            captureButton.widthAnchor.constraint(equalToConstant: 60),
+            captureButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
 }

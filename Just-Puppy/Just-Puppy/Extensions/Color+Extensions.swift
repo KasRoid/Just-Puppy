@@ -9,13 +9,5 @@ import SwiftUI
 
 extension Color {
     
-    public static var mainRed: Color { fetchColor(#function) }
-
-    private static func fetchColor(_ name: String) -> Color {
-        guard let uiColor = UIColor(named: name) else {
-            assertionFailure()
-            return .clear
-        }
-        return Color(uiColor: uiColor)
-    }
+    public static var mainRed: Color { Color(uiColor: .mainRed) }
 }
