@@ -11,7 +11,7 @@ import UIKit
 
 struct ContentReducer: Reducer {
 
-    @Dependency(\.cameraEnvironment) var cameraEnvironment
+    @Dependency(\.cameraAuthorizationEnvironment) var cameraEnvironment
     
     struct State: Equatable {
         var initialized = false

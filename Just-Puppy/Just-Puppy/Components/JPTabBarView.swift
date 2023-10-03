@@ -71,11 +71,16 @@ extension JPTabBarView {
         }
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity)
+        .foregroundStyle(isSelected(tab) ? .mainRed : Color.primary)
     }
 }
 
 // MARK: - Private Functions
 extension JPTabBarView {
+    
+    private func isSelected(_ tab: JPTab) -> Bool {
+        selectedTab == tab
+    }
     
     private func switchToTab(_ tab: JPTab) {
         selectedTab = tab

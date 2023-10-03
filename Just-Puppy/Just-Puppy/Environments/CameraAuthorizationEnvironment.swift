@@ -1,5 +1,5 @@
 //
-//  CameraEnvironment.swift
+//  CameraAuthorizationEnvironment.swift
 //  Just-Puppy
 //
 //  Created by Doyoung Song on 10/3/23.
@@ -8,14 +8,14 @@
 import AVFoundation
 import ComposableArchitecture
 
-struct CameraEnvironment {
+struct CameraAuthorizationEnvironment {
     
     var event: Event
 }
 
-extension CameraEnvironment: DependencyKey {
+extension CameraAuthorizationEnvironment: DependencyKey {
     
-    static var liveValue: CameraEnvironment {
+    static var liveValue: CameraAuthorizationEnvironment {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
             return .init(event: .authorized)
@@ -31,7 +31,7 @@ extension CameraEnvironment: DependencyKey {
     }
 }
 
-extension CameraEnvironment {
+extension CameraAuthorizationEnvironment {
     
     enum Event {
         case alert(message: String)
@@ -42,7 +42,7 @@ extension CameraEnvironment {
 
 extension DependencyValues {
     
-    var cameraEnvironment: CameraEnvironment {
-        get { self[CameraEnvironment.self] }
+    var cameraAuthorizationEnvironment: CameraAuthorizationEnvironment {
+        get { self[CameraAuthorizationEnvironment.self] }
     }
 }
