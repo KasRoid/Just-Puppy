@@ -5,6 +5,7 @@
 //  Created by Doyoung Song on 10/2/23.
 //
 
+import ComposableArchitecture
 import SwiftUI
 
 struct JPTabBarView: View {
