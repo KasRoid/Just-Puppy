@@ -37,7 +37,7 @@ extension ContentView {
     private func tabView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
         JPTabView(selectedTab: viewState.binding(get: { $0.selectedTab }, 
                                                  send: ContentReducer.Action.select),
-                  action: { viewState.send(.showCamera) }) {
+                  action: { viewState.send(.checkCameraAuthorization) }) {
             
             homeView(with: viewState)
             favoritesView(with: viewState)
