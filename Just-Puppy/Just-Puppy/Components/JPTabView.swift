@@ -12,12 +12,14 @@ struct JPTabView<Content: View>: View {
     
     @Binding var selectedTab: JPTab
     let action: () -> Void
+    private(set) var isLoading: Bool
     let content: Content
     @State private var tabs: [JPTab] = []
     
-    init(selectedTab: Binding<JPTab>, action: @escaping () -> Void,  @ViewBuilder content: () -> Content) {
+    init(selectedTab: Binding<JPTab>, action: @escaping () -> Void, isLoading: Bool, @ViewBuilder content: () -> Content) {
         self._selectedTab = selectedTab
         self.action = action
+        self.isLoading = isLoading
         self.content = content()
     }
     
@@ -26,7 +28,7 @@ struct JPTabView<Content: View>: View {
             ZStack {
                 content
             }
-            JPTabBarView(tabs: tabs, selectedTab: $selectedTab, action: action)
+            JPTabBarView(tabs: tabs, selectedTab: $selectedTab, isLoading: isLoading, action: action)
         }
         .onPreferenceChange(JPTabBarPreferenceKey.self) { tabs = $0 }
     }
@@ -34,7 +36,7 @@ struct JPTabView<Content: View>: View {
 
 // MARK: - Preview
 #Preview {
-    JPTabView(selectedTab: .constant(.home), action: {}) {
+    JPTabView(selectedTab: .constant(.home), action: {}, isLoading: false) {
         Color.red
     }
 }

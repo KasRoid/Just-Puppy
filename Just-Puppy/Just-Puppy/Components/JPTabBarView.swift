@@ -12,6 +12,7 @@ struct JPTabBarView: View {
     
     let tabs: [JPTab]
     @Binding var selectedTab: JPTab
+    private(set) var isLoading: Bool
     let action: () -> Void
     
     var body: some View {
@@ -27,16 +28,22 @@ extension JPTabBarView {
     
     private var plusView: some View {
         Button(action: { action() }) {
-            Image(systemName: "plus")
-                .resizable()
-                .frame(width: 14, height: 14)
-                .fontWeight(.heavy)
-                .padding(16)
-                .foregroundStyle(Color.white)
-                .background(
-                    Circle().fill(Color.mainRed)
-                )
+            if isLoading {
+                ProgressView()
+                    .tint(Color.white)
+            } else {
+                Image(systemName: "plus")
+                    .resizable()
+                    .fontWeight(.heavy)
+                    .foregroundStyle(Color.white)
+            }
         }
+        .frame(width: 14, height: 14)
+        .padding(16)
+        .disabled(isLoading)
+        .background(
+            Circle().fill(isLoading ? Color.gray : Color.mainRed)
+        )
     }
     
     private var horizontalTabListView: some View {
@@ -79,6 +86,6 @@ extension JPTabBarView {
 #Preview {
     VStack {
         Spacer()
-        JPTabBarView(tabs: [.home, .favorites, .statistics, .settings], selectedTab: .constant(.home)) {}
+        JPTabBarView(tabs: [.home, .favorites, .statistics, .settings], selectedTab: .constant(.home), isLoading: true) {}
     }
 }

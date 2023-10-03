@@ -32,13 +32,15 @@ extension ContentView {
                                                             send: ContentReducer.Action.hideCamera)) {
                 CameraView()
                     .ignoresSafeArea()
+                    .onAppear { viewState.send(.hideCameraLoading) }
             }
     }
     
     private func tabView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
         JPTabView(selectedTab: viewState.binding(get: { $0.selectedTab }, 
                                                  send: ContentReducer.Action.select),
-                  action: { viewState.send(.checkCameraAuthorization) }) {
+                  action: { viewState.send(.checkCameraAuthorization) },
+                  isLoading: viewState.isCameraLoading) {
             
             homeView(with: viewState)
             favoritesView(with: viewState)

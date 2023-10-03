@@ -16,6 +16,7 @@ struct ContentReducer: Reducer {
     struct State: Equatable {
         var initialized = false
         var selectedTab: JPTab = .home
+        var isCameraLoading = false
         var isCameraPresented = false
         var capturedImage: UIImage?
         var alertMessage: String?
@@ -25,6 +26,8 @@ struct ContentReducer: Reducer {
         case initialize
         case checkCameraAuthorization
         case showCameraAuthRequest
+        case showCameraLoading
+        case hideCameraLoading
         case showCamera
         case hideCamera
         case showAlert(message: String)
@@ -42,6 +45,12 @@ struct ContentReducer: Reducer {
                 return cameraAuthCheckEffect
             case .showCameraAuthRequest:
                 return cameraAuthRequestEffect
+            case .showCameraLoading:
+                state.isCameraLoading = true
+                return .none
+            case .hideCameraLoading:
+                state.isCameraLoading = false
+                return .none
             case .showCamera:
                 state.isCameraPresented = true
                 return .none
@@ -69,6 +78,7 @@ extension ContentReducer {
         return .run { send in
             switch cameraEnvironment.event {
             case .authorized:
+                await send(.showCameraLoading)
                 await send(.showCamera)
             case .authorizationRequired:
                 await send(.showCameraAuthRequest)
@@ -81,6 +91,7 @@ extension ContentReducer {
     private var cameraAuthRequestEffect: Effect<Action> {
         return .run { send in
             guard await AVCaptureDevice.requestAccess(for: .video) else { return }
+            await send(.showCameraLoading)
             await send(.showCamera)
         }
     }
