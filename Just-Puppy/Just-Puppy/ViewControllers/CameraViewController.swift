@@ -12,6 +12,7 @@ import UIKit
 
 final class CameraViewController: UIViewController {
     
+    private let previewContainerView = UIView()
     private let cancelButton = UIButton()
     private let captureButton = UIButton()
     
@@ -19,6 +20,12 @@ final class CameraViewController: UIViewController {
     private let viewStore: ViewStore<CameraReducer.State, CameraReducer.Action>
     private let cancelAction: () -> Void
     private var cancellables = Set<AnyCancellable>()
+    
+    private var translucentView: UIView {
+        let view = UIView()
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        return view
+    }
     
     init(store: StoreOf<CameraReducer>, cancelAction: @escaping () -> Void) {
         viewStore = ViewStore(store, observe: { $0 })
@@ -37,6 +44,11 @@ final class CameraViewController: UIViewController {
         bindUI()
         setupVideoDataOutput()
         startCaptureSession()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        previewContainerView.layer.sublayers?.first?.frame = previewContainerView.bounds
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -132,28 +144,51 @@ extension CameraViewController {
     }
     
     private func setupPreviewLayer() {
+        view.addSubview(previewContainerView)
+        previewContainerView.translatesAutoresizingMaskIntoConstraints = false
         let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        view.layer.insertSublayer(previewLayer, below: view.layer)
-        previewLayer.frame = view.layer.frame
+        previewContainerView.layer.insertSublayer(previewLayer, below: previewContainerView.layer)
+        previewLayer.frame = previewContainerView.layer.frame
+        previewLayer.videoGravity = .resizeAspectFill
+        
+        NSLayoutConstraint.activate([
+            previewContainerView.topAnchor.constraint(equalTo: view.topAnchor),
+            previewContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            previewContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            previewContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
     
     private func setupCancelButton() {
-        view.addSubview(cancelButton)
+        let containerView = translucentView
+        view.addSubview(containerView)
+        containerView.addSubview(cancelButton)
+        containerView.translatesAutoresizingMaskIntoConstraints = false
         cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        
         var configuration = UIButton.Configuration.plain()
         configuration.title = "Cancel"
         configuration.baseForegroundColor = .mainRed
         cancelButton.configuration = configuration
         
         NSLayoutConstraint.activate([
-            cancelButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
-            cancelButton.leadingAnchor.constraint(equalTo: view.leadingAnchor)
+            containerView.topAnchor.constraint(equalTo: view.topAnchor),
+            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            containerView.heightAnchor.constraint(equalToConstant: 120),
+            
+            cancelButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: 20),
+            cancelButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16)
         ])
     }
     
     private func setupCaptureButton() {
-        view.addSubview(captureButton)
+        let containerView = translucentView
+        view.addSubview(containerView)
+        containerView.addSubview(captureButton)
+        containerView.translatesAutoresizingMaskIntoConstraints = false
         captureButton.translatesAutoresizingMaskIntoConstraints = false
+        
         var configuration = UIButton.Configuration.filled()
         configuration.cornerStyle = .capsule
         configuration.baseBackgroundColor = .mainRed
@@ -161,8 +196,13 @@ extension CameraViewController {
         captureButton.configuration = configuration
         
         NSLayoutConstraint.activate([
-            captureButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            captureButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            containerView.heightAnchor.constraint(equalToConstant: 140),
+            
+            captureButton.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            captureButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: -16),
             captureButton.widthAnchor.constraint(equalToConstant: 60),
             captureButton.heightAnchor.constraint(equalToConstant: 60)
         ])
