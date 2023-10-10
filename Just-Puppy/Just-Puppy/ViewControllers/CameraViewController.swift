@@ -17,6 +17,7 @@ final class CameraViewController: UIViewController {
     private let captureButton = UIButton()
     
     private let captureSession = AVCaptureSession()
+    private var photoOutput = AVCapturePhotoOutput()
     private let viewStore: ViewStore<CameraReducer.State, CameraReducer.Action>
     private let cancelAction: () -> Void
     private var cancellables = Set<AnyCancellable>()
@@ -42,7 +43,7 @@ final class CameraViewController: UIViewController {
         setupUI()
         bindViewStore()
         bindUI()
-        setupVideoDataOutput()
+        setupPhotoOutput()
         startCaptureSession()
     }
     
@@ -66,7 +67,7 @@ extension CameraViewController {
             .store(in: &cancellables)
         
         captureButton.publisher(for: .touchUpInside)
-            .sink { [weak self] _ in self?.viewStore.send(.takePhoto) }
+            .sink { [weak self] _ in self?.takePhoto() }
             .store(in: &cancellables)
     }
     
@@ -103,12 +104,9 @@ extension CameraViewController {
         }
     }
     
-    private func setupVideoDataOutput() {
-        let dataOutput = AVCaptureVideoDataOutput()
-        let videoQueue = DispatchQueue(label: "videoQueue", qos: .userInteractive)
-        dataOutput.setSampleBufferDelegate(self, queue: videoQueue)
-        guard captureSession.canAddOutput(dataOutput) else { return }
-        captureSession.addOutput(dataOutput)
+    private func setupPhotoOutput() {
+        guard captureSession.canAddOutput(photoOutput) else { return }
+        captureSession.addOutput(photoOutput)
     }
     
     private func stopCaptureSession() {
@@ -117,20 +115,23 @@ extension CameraViewController {
             self?.captureSession.stopRunning()
         }
     }
+    
+    private func takePhoto() {
+        let photoSetting = AVCapturePhotoSettings()
+        if let photoPreviewType = photoSetting.availablePreviewPhotoPixelFormatTypes.first {
+            photoSetting.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: photoPreviewType]
+            photoOutput.capturePhoto(with: photoSetting, delegate: self)
+        }
+    }
 }
 
 // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate
-extension CameraViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
+extension CameraViewController: AVCapturePhotoCaptureDelegate {
     
-    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        guard viewStore.state.isTakingPhoto,
-              let cvImageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-        let ciImage = CIImage(cvImageBuffer: cvImageBuffer)
-        let uiImage = UIImage(ciImage: ciImage)
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.viewStore.send(.capture(image: uiImage))
-        }
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        guard let cgImage = photo.cgImageRepresentation() else { return }
+        let image = UIImage(cgImage: cgImage)
+        viewStore.send(.capture(image: image))
     }
 }
 

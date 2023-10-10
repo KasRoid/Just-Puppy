@@ -23,7 +23,7 @@ struct CameraView: View {
                 .ignoresSafeArea()
                 .toolbar(.hidden)
                 .navigationDestination(isPresented: $isReviewPresented) {
-                    PhotoReviewView()
+                    PhotoReviewView(capturedImage: capturedImage)
                 }
         }
     }
@@ -36,7 +36,7 @@ struct CameraViewRepresentable: UIViewControllerRepresentable {
     @Binding var capturedImage: UIImage?
     @Binding var isReviewPresented: Bool
     
-    private let store = Store(initialState: .init(), reducer:  { CameraReducer() })
+    private let store = Store(initialState: .init(), reducer: { CameraReducer() })
     
     func makeUIViewController(context: Context) -> UIViewController {
         let controller = CameraViewController(store: store, cancelAction: { dismiss() })

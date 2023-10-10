@@ -9,8 +9,15 @@ import SwiftUI
 
 struct PhotoReviewView: View {
     
+    @State var capturedImage: UIImage?
+    
     var body: some View {
-        Text("Review")
+        if let image = capturedImage {
+            Image(uiImage: image)
+                .resizable()
+                .frame(width: 200, height: 200)
+                .aspectRatio(contentMode: .fit)
+        }
     }
 }
 

@@ -14,12 +14,10 @@ struct CameraReducer: Reducer {
     struct State: Equatable {
         var position: AVCaptureDevice.Position = .back
         var capturedImage: UIImage?
-        var isTakingPhoto: Bool = false
     }
     
     enum Action {
         case setCapturePosition(AVCaptureDevice.Position)
-        case takePhoto
         case capture(image: UIImage?)
     }
     
@@ -29,11 +27,7 @@ struct CameraReducer: Reducer {
             case .setCapturePosition(let position):
                 state.position = position
                 return .none
-            case .takePhoto:
-                state.isTakingPhoto = true
-                return .none
             case .capture(let image):
-                state.isTakingPhoto = false
                 state.capturedImage = image
                 return .none
             }
