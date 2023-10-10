@@ -33,8 +33,8 @@ struct CameraReducer: Reducer {
                 state.isTakingPhoto = true
                 return .none
             case .capture(let image):
-                state.capturedImage = image
                 state.isTakingPhoto = false
+                state.capturedImage = image
                 return .none
             }
         }
