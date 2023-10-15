@@ -24,6 +24,7 @@ struct ContentView: View {
     }
 }
 
+// MARK: - UI
 extension ContentView {
     
     private func mainView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
@@ -59,10 +60,10 @@ extension ContentView {
         FavoritesView()
             .tabBarItem(.favorites, selectedTab: viewState.binding(get: { $0.selectedTab },
                                                                    send: ContentReducer.Action.select))
-        
     }
 }
 
+// MARK: - Preview
 #Preview {
     ContentView(store: .init(initialState: .init(), reducer: { ContentReducer() }))
 }

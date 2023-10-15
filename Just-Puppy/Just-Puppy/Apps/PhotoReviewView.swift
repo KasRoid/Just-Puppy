@@ -61,9 +61,10 @@ extension PhotoReviewView {
     
     private func analyzeButtonView(with viewStore: ViewStoreOf<PhotoReviewReducer>) -> some View {
         JPFilledButtonView(title: "Analyze") {
-            viewStore.send(.analyze)
+            let image = viewStore.capturedImage
+            viewStore.send(.analyze(image))
         }
-        .padding(.horizontal, 16)
+            .padding(.horizontal, 16)
     }
 }
 

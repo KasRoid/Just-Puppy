@@ -18,6 +18,7 @@ struct FavoritesView: View {
     }
 }
 
+// MARK: - Preview
 #Preview {
     FavoritesView()
 }
