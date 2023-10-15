@@ -131,7 +131,8 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         guard let cgImage = photo.cgImageRepresentation() else { return }
         let image = UIImage(cgImage: cgImage)
-        viewStore.send(.capture(image: image))
+        let rotatedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: .right)
+        viewStore.send(.capture(image: rotatedImage))
     }
 }
 
