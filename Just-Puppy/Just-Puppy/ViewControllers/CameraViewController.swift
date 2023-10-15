@@ -16,8 +16,8 @@ final class CameraViewController: UIViewController {
     private let cancelButton = UIButton()
     private let captureButton = UIButton()
     
-    private let captureSession = AVCaptureSession()
-    private var photoOutput = AVCapturePhotoOutput()
+    @Published private var captureSession: AVCaptureSession?
+    private var photoOutput: AVCapturePhotoOutput?
     private let viewStore: ViewStore<CameraReducer.State, CameraReducer.Action>
     private let cancelAction: () -> Void
     private var cancellables = Set<AnyCancellable>()
@@ -41,15 +41,14 @@ final class CameraViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        bindSession()
         bindViewStore()
         bindUI()
-        setupPhotoOutput()
-        startCaptureSession()
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        previewContainerView.layer.sublayers?.first?.frame = previewContainerView.bounds
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        startCaptureSession()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -72,8 +71,28 @@ extension CameraViewController {
     }
     
     private func bindViewStore() {
-        viewStore.publisher.position
-            .sink { [weak self] in self?.setupInputs(position: $0) }
+        Publishers.CombineLatest($captureSession, viewStore.publisher.position)
+            .compactMap {
+                guard let session = $0.0 else { return nil }
+                let position = $0.1
+                return (session, position)
+            }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in self?.setupInputs(with: $0, position: $1) }
+            .store(in: &cancellables)
+    }
+    
+    private func bindSession() {
+        $captureSession
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] in
+                if let session = $0 {
+                    self?.setupPhotoOutput(with: session)
+                    self?.setupPreviewLayer(with: session)
+                } else {
+                    self?.previewContainerView.layer.sublayers?.removeAll()
+                }
+            }
             .store(in: &cancellables)
     }
 }
@@ -83,36 +102,42 @@ extension CameraViewController {
     
     private func startCaptureSession() {
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let self else { return }
-            captureSession.beginConfiguration()
-            captureSession.sessionPreset = .photo
-            captureSession.automaticallyConfiguresCaptureDeviceForWideColor = true
-            captureSession.commitConfiguration()
-            captureSession.startRunning()
+            let session = AVCaptureSession()
+            session.beginConfiguration()
+            session.sessionPreset = .photo
+            session.automaticallyConfiguresCaptureDeviceForWideColor = true
+            session.commitConfiguration()
+            session.startRunning()
+            self?.captureSession = session
         }
     }
     
-    private func setupInputs(position: AVCaptureDevice.Position) {
+    private func setupInputs(with session: AVCaptureSession, position: AVCaptureDevice.Position) {
         guard let captureDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position) else { return }
-        captureSession.inputs.forEach { captureSession.removeInput($0) }
+        session.inputs.forEach(session.removeInput)
         do {
             let input = try AVCaptureDeviceInput(device: captureDevice)
-            guard captureSession.canAddInput(input) else { return }
-            captureSession.addInput(input)
+            guard session.canAddInput(input) else { return }
+            session.addInput(input)
         } catch {
             print(error)
         }
     }
     
-    private func setupPhotoOutput() {
-        guard captureSession.canAddOutput(photoOutput) else { return }
-        captureSession.addOutput(photoOutput)
+    private func setupPhotoOutput(with session: AVCaptureSession) {
+        let output = AVCapturePhotoOutput()
+        session.outputs.forEach(session.removeOutput)
+        guard session.canAddOutput(output) else { return }
+        session.addOutput(output)
+        photoOutput = output
     }
     
     private func stopCaptureSession() {
-        guard captureSession.isRunning else { return }
+        guard let captureSession, captureSession.isRunning else { return }
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            self?.captureSession.stopRunning()
+            self?.captureSession?.stopRunning()
+            self?.captureSession = nil
+            self?.photoOutput = nil
         }
     }
     
@@ -120,7 +145,7 @@ extension CameraViewController {
         let photoSetting = AVCapturePhotoSettings()
         if let photoPreviewType = photoSetting.availablePreviewPhotoPixelFormatTypes.first {
             photoSetting.previewPhotoFormat = [kCVPixelBufferPixelFormatTypeKey as String: photoPreviewType]
-            photoOutput.capturePhoto(with: photoSetting, delegate: self)
+            photoOutput?.capturePhoto(with: photoSetting, delegate: self)
         }
     }
 }
@@ -140,18 +165,14 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
 extension CameraViewController {
     
     private func setupUI() {
-        setupPreviewLayer()
+        setupPreviewContainerView()
         setupCancelButton()
         setupCaptureButton()
     }
     
-    private func setupPreviewLayer() {
+    private func setupPreviewContainerView() {
         view.addSubview(previewContainerView)
         previewContainerView.translatesAutoresizingMaskIntoConstraints = false
-        let previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewContainerView.layer.insertSublayer(previewLayer, below: previewContainerView.layer)
-        previewLayer.frame = previewContainerView.layer.frame
-        previewLayer.videoGravity = .resizeAspectFill
         
         NSLayoutConstraint.activate([
             previewContainerView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -159,6 +180,15 @@ extension CameraViewController {
             previewContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             previewContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+    
+    private func setupPreviewLayer(with session: AVCaptureSession) {
+        previewContainerView.layer.sublayers?.removeAll()
+        let previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        previewContainerView.layer.insertSublayer(previewLayer, below: previewContainerView.layer)
+        previewLayer.frame = previewContainerView.layer.frame
+        previewLayer.videoGravity = .resizeAspectFill
+        previewContainerView.layer.sublayers?.first?.frame = previewContainerView.bounds
     }
     
     private func setupCancelButton() {

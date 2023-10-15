@@ -10,6 +10,7 @@ import SwiftUI
 
 struct PhotoReviewView: View {
     
+    @Environment(\.dismiss) var dismiss
     let store: StoreOf<PhotoReviewReducer>
     
     var body: some View {
@@ -36,15 +37,13 @@ extension PhotoReviewView {
             .resizable()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .aspectRatio(contentMode: .fit)
-            .overlay {
-                goBackButtonView(with: viewStore)
-            }
+            .overlay { goBackButtonView }
     }
     
-    private func goBackButtonView(with viewStore: ViewStoreOf<PhotoReviewReducer>) -> some View {
+    private var goBackButtonView: some View {
         VStack {
             HStack {
-                JPNavigationBackButtonView { viewStore.send(.goBack) }
+                JPNavigationBackButtonView { dismiss() }
                 Spacer()
             }
             Spacer()
