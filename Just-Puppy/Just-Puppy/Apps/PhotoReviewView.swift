@@ -25,6 +25,13 @@ struct PhotoReviewView: View {
             }
             .toolbar(.hidden)
             .ignoresSafeArea(edges: .top)
+            .navigationDestination(isPresented: viewStore.binding(get: { $0.isAnalysisPresented },
+                                                                  send: PhotoReviewReducer.Action.hideAnalysis)) {
+                let analysis = viewStore.analysis
+                let store: StoreOf<AnalysisReducer> = .init(initialState: .init(analysis: analysis), 
+                                                            reducer: { AnalysisReducer() })
+                AnalysisView(store: store)
+            }
         }
     }
 }
@@ -60,10 +67,7 @@ extension PhotoReviewView {
     }
     
     private func analyzeButtonView(with viewStore: ViewStoreOf<PhotoReviewReducer>) -> some View {
-        JPFilledButtonView(title: "Analyze") {
-            let image = viewStore.capturedImage
-            viewStore.send(.analyze(image))
-        }
+        JPFilledButtonView(title: "Analyze") { viewStore.send(.analyze) }
             .padding(.horizontal, 16)
     }
 }

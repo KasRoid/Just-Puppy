@@ -9,7 +9,6 @@ import AVFoundation
 import ComposableArchitecture
 
 struct CameraAuthorizationEnvironment {
-    
     var event: Event
 }
 

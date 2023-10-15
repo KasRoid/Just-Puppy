@@ -10,21 +10,32 @@ import UIKit
 
 struct PhotoReviewReducer: Reducer {
     
-    @Dependency(\.dogEmotionClassificationEnvironment) var dogClassificationEnvironment
+    @Dependency(\.dogEmotionClassificationEnvironment) var dogEmotionClassificationEnvironment
     
     struct State: Equatable {
         var capturedImage: UIImage
+        var analysis: Analysis?
+        var isAnalysisPresented = false
     }
     
     enum Action {
-        case analyze(UIImage)
+        case analyze
+        case showAnalysis(Analysis?)
+        case hideAnalysis
     }
     
     var body: some ReducerOf<PhotoReviewReducer> {
         Reduce { state, action in
             switch action {
-            case .analyze(let image):
+            case .analyze:
+                let image = state.capturedImage
                 return dogClassificationEffect(with: image)
+            case .showAnalysis(let analysis):
+                state.analysis = analysis
+                state.isAnalysisPresented = true
+                return .none
+            case .hideAnalysis:
+                return .none
             }
         }
     }
@@ -35,19 +46,8 @@ extension PhotoReviewReducer {
     
     private func dogClassificationEffect(with image: UIImage) -> Effect<Action> {
         return .run { send in
-            let prediction = dogClassificationEnvironment.prediction(image)
-            switch prediction {
-            case .happy:
-                print("Happy")
-            case .angry:
-                print("Angry")
-            case .relaxed:
-                print("Relaxed")
-            case .sad:
-                print("Sad")
-            case .none:
-                print("None")
-            }
+            let analysis = dogEmotionClassificationEnvironment.analysis(image)
+            await send(.showAnalysis(analysis))
         }
     }
 }
