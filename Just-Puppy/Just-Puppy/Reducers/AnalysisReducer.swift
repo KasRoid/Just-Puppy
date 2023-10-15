@@ -6,6 +6,7 @@
 //
 
 import ComposableArchitecture
+import Foundation
 
 struct AnalysisReducer: Reducer {
     
@@ -14,13 +15,18 @@ struct AnalysisReducer: Reducer {
     }
     
     enum Action {
-        
+        case deleteAnalysis
+        case saveAnalysis
     }
     
     var body: some ReducerOf<AnalysisReducer> {
         Reduce { state, action in
             switch action {
-            default:
+            case .deleteAnalysis:
+                NotificationCenter.default.post(name: .goToRoot, object: nil)
+                return .none
+            case .saveAnalysis:
+                NotificationCenter.default.post(name: .goToRoot, object: nil)
                 return .none
             }
         }

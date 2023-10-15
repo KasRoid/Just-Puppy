@@ -48,6 +48,9 @@ struct CameraViewRepresentable: UIViewControllerRepresentable {
             self.capturedImage = $0
             self.isReviewPresented = true
         }
+        context.coordinator.bindNotification {
+            self.dismiss()
+        }
         return controller
     }
     
@@ -71,6 +74,12 @@ struct CameraViewRepresentable: UIViewControllerRepresentable {
             store.publisher.capturedImage
                 .compactMap { $0 }
                 .sink { handler($0) }
+                .store(in: &cancellables)
+        }
+        
+        fileprivate func bindNotification(handler: @escaping () -> Void)  {
+            NotificationCenter.default.publisher(for: .goToRoot)
+                .sink { _ in handler() }
                 .store(in: &cancellables)
         }
     }

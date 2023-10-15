@@ -21,7 +21,7 @@ struct AnalysisView: View {
                 Spacer().frame(height: 40)
                 descriptionView(with: viewStore)
                 Spacer()
-                deletePhotoButtonView
+                buttonsView(with: viewStore)
                 Spacer().frame(height: 20)
             }
         }
@@ -83,17 +83,23 @@ extension AnalysisView {
         .padding(.horizontal, 16)
     }
     
-    private var deletePhotoButtonView: some View {
-        JPOutlinedButtonView(title: "Delete") {
-            print("Delete")
+    private func buttonsView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
+        HStack(spacing: 12) {
+            deletePhotoButtonView(with: viewStore)
+            savePhotoButtonView(with: viewStore)
         }
         .padding(.horizontal, 16)
+        .frame(maxWidth: .infinity)
     }
     
-    private var savePhotoButtonView: some View {
-        JPFilledButtonView(title: "Save") {
-            print("Save")
-        }
+    private func deletePhotoButtonView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
+        JPOutlinedButtonView(title: "Delete") { viewStore.send(.deleteAnalysis) }
+            .frame(maxWidth: .infinity)
+    }
+    
+    private func savePhotoButtonView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
+        JPFilledButtonView(title: "Save") { viewStore.send(.saveAnalysis) }
+            .frame(maxWidth: .infinity)
     }
 }
 
