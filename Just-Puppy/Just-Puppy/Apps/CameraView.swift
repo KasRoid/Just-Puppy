@@ -23,7 +23,11 @@ struct CameraView: View {
                 .ignoresSafeArea()
                 .toolbar(.hidden)
                 .navigationDestination(isPresented: $isReviewPresented) {
-                    PhotoReviewView(capturedImage: capturedImage)
+                    if let capturedImage {
+                        let store: StoreOf<PhotoReviewReducer> = .init(initialState: PhotoReviewReducer.State(capturedImage: capturedImage),
+                                                                       reducer: { PhotoReviewReducer() })
+                        PhotoReviewView(store: store)
+                    }
                 }
         }
     }

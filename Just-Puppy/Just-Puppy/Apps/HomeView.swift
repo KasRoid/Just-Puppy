@@ -44,7 +44,7 @@ extension HomeView {
         }
     }
     
-    private func listView(_ viewStore: ViewStore<MainReducer.State, MainReducer.Action>) -> some View {
+    private func listView(_ viewStore: ViewStoreOf<MainReducer>) -> some View {
         ScrollView {
             VStack(spacing: 0) {
                 ForEach(viewStore.histories, id: \.self) { history in
