@@ -9,7 +9,6 @@ import AVFoundation
 import ComposableArchitecture
 
 struct CameraCaptureEnvironment {
-    
     var event: Event
 }
 

@@ -9,11 +9,14 @@ import ComposableArchitecture
 
 struct MainReducer: Reducer {
     
+    @Dependency(\.fileLoadingEnvironment) var fileLoadingEnvironment
+    
     struct State: Equatable {
-        var histories: [String] = []
+        var analyses: [Analysis] = []
     }
     
     enum Action {
+        case loadAnalyses
         case showAlbum
         case showDetail
     }
@@ -21,6 +24,10 @@ struct MainReducer: Reducer {
     var body: some ReducerOf<MainReducer> {
         Reduce { state, action in
             switch action {
+            case .loadAnalyses:
+                let analyses = fileLoadingEnvironment.analyses ?? []
+                state.analyses = analyses
+                return .none
             default:
                 return .none
             }

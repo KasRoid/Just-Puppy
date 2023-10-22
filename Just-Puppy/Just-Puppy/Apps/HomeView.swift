@@ -24,7 +24,7 @@ extension HomeView {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationStack {
                 Group {
-                    if viewStore.histories.isEmpty {
+                    if viewStore.analyses.isEmpty {
                         noDataView
                     } else {
                         listView(viewStore)
@@ -33,6 +33,7 @@ extension HomeView {
                 .navigationTitle("Home")
                 .navigationBarTitleDisplayMode(.inline)
             }
+            .onAppear { viewStore.send(.loadAnalyses) }
         }
     }
     
@@ -47,8 +48,8 @@ extension HomeView {
     private func listView(_ viewStore: ViewStoreOf<MainReducer>) -> some View {
         ScrollView {
             VStack(spacing: 0) {
-                ForEach(viewStore.histories, id: \.self) { history in
-                    Text(history)
+                ForEach(viewStore.analyses, id: \.self) { history in
+                    Text(history.date.yyyyMMddDashed)
                 }
             }
         }
