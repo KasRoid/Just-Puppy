@@ -28,9 +28,9 @@ struct PhotoReviewView: View {
             .navigationDestination(isPresented: viewStore.binding(get: { $0.isAnalysisPresented },
                                                                   send: PhotoReviewReducer.Action.hideAnalysis)) {
                 let analysis = viewStore.analysis
-                let store: StoreOf<AnalysisReducer> = .init(initialState: .init(analysis: analysis), 
+                let store: StoreOf<AnalysisReducer> = .init(initialState: .init(analysis: analysis),
                                                             reducer: { AnalysisReducer() })
-                AnalysisView(store: store)
+                AnalysisView(type: .result, store: store)
             }
         }
     }
@@ -57,7 +57,7 @@ extension PhotoReviewView {
         }
         .padding(.top, 60)
         .padding(.leading, 16)
-
+        
     }
     
     private var descriptionView: some View {

@@ -14,7 +14,9 @@ struct JPNavigationBackButtonView: View {
     var body: some View {
         Button(action: { action() }) {
             Image(systemName: "arrowshape.backward.fill")
+                .resizable()
                 .foregroundStyle(Color.mainRed)
+                .frame(width: 24, height: 24)
         }
         .frame(width: 40, height: 40)
     }

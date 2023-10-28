@@ -11,6 +11,7 @@ import Foundation
 struct AnalysisReducer: Reducer {
     
     @Dependency(\.fileSavingEnvironment) var fileSavingEnvironment
+    @Dependency(\.fileDeletionEnvironment) var fileDeletionEnvironment
     
     struct State: Equatable {
         let analysis: Analysis?
@@ -27,7 +28,9 @@ struct AnalysisReducer: Reducer {
         Reduce { state, action in
             switch action {
             case .deleteAnalysis:
-                return .none
+                let analysis = state.analysis!
+                let event = fileDeletionEnvironment.analysis(analysis)
+                return .run { await $0(.goToRoot) }
             case .saveAnalysis:
                 let analysis = state.analysis!
                 let event = fileSavingEnvironment.analysis(analysis)

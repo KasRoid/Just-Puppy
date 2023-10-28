@@ -52,7 +52,13 @@ extension HomeView {
         ScrollView {
             VStack(spacing: 8) {
                 ForEach(viewStore.analyses, id: \.self) { analysis in
-                    analysisItemView(analysis)
+                    NavigationLink {
+                        let store = StoreOf<AnalysisReducer>(initialState: AnalysisReducer.State(analysis: analysis), 
+                                                             reducer: { AnalysisReducer() })
+                        AnalysisView(type: .detail, store: store)
+                    } label: {
+                        analysisItemView(analysis)
+                    }
                 }
             }
             .padding(.horizontal, 16)
@@ -96,8 +102,6 @@ extension HomeView {
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 16))
-        .contentShape(RoundedRectangle(cornerRadius: 16))
-        .onTapGesture { print("Detail") }
     }
 }
 

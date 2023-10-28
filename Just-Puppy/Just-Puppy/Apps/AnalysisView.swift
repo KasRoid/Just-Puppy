@@ -8,14 +8,21 @@
 import ComposableArchitecture
 import SwiftUI
 
+enum AnalysisViewType {
+    case detail
+    case result
+}
+
 struct AnalysisView: View {
     
+    @Environment(\.dismiss) var dismiss
+    let type: AnalysisViewType
     let store: StoreOf<AnalysisReducer>
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack {
-                imageView(with: viewStore)
+                navigationImageView(with: viewStore)
                 Spacer().frame(height: 20)
                 titleView(with: viewStore)
                 Spacer().frame(height: 40)
@@ -32,6 +39,26 @@ struct AnalysisView: View {
 
 // MARK: - UI
 extension AnalysisView {
+    
+    private func navigationImageView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
+        ZStack {
+            imageView(with: viewStore)
+            navigationView(with: viewStore)
+        }
+    }
+    
+    private func navigationView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
+        VStack {
+            Spacer().frame(height: 60)
+            HStack(alignment: .top) {
+                Spacer().frame(width: 16)
+                JPNavigationBackButtonView(action: { dismiss() })
+                Spacer()
+            }
+            Spacer()
+        }
+        .frame(height: 300)
+    }
     
     @ViewBuilder
     private func imageView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
@@ -86,14 +113,22 @@ extension AnalysisView {
     private func buttonsView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
         HStack(spacing: 12) {
             deletePhotoButtonView(with: viewStore)
-            savePhotoButtonView(with: viewStore)
+            if type == .result {
+                savePhotoButtonView(with: viewStore)
+            }
         }
         .padding(.horizontal, 16)
         .frame(maxWidth: .infinity)
     }
     
     private func deletePhotoButtonView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
-        JPOutlinedButtonView(title: "Delete") { viewStore.send(.deleteAnalysis) }
+        JPOutlinedButtonView(title: "Delete") {
+            if type == .result {
+                viewStore.send(.deleteAnalysis)
+            } else {
+                dismiss()
+            }
+        }
             .frame(maxWidth: .infinity)
     }
     
@@ -104,6 +139,6 @@ extension AnalysisView {
 }
 
 #Preview {
-    AnalysisView(store: .init(initialState: AnalysisReducer.State(analysis: nil),
-                              reducer: { AnalysisReducer() }))
+    AnalysisView(type: .detail, store: .init(initialState: AnalysisReducer.State(analysis: nil),
+                                             reducer: { AnalysisReducer() }))
 }
