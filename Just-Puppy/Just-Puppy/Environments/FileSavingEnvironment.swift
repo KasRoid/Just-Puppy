@@ -21,12 +21,14 @@ extension FileSavingEnvironment: DependencyKey {
         let directoryPath = documentPath.appendingPathComponent("emotion_analyses")
         
         do {
-            try fileManager.createDirectory(at: directoryPath, withIntermediateDirectories: false, attributes: nil)
+            try fileManager.createDirectory(at: directoryPath, withIntermediateDirectories: true, attributes: nil)
             let filePath = directoryPath.appendingPathComponent(analysis.date.yyyyMMddHHmmssNoSeperator)
             let data = try JSONEncoder().encode(analysis)
             try data.write(to: filePath)
+            NotificationCenter.default.post(name: .changesInFiles, object: nil)
             return .success(())
         } catch {
+            print(error, directoryPath.appendingPathComponent(analysis.date.yyyyMMddHHmmssNoSeperator))
             return .failure(error)
         }
     }

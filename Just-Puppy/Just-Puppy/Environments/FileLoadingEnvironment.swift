@@ -9,7 +9,6 @@ import ComposableArchitecture
 import Foundation
 
 struct FileLoadingEnvironment {
-    
     var analyses: [Analysis]?
 }
 
@@ -47,7 +46,7 @@ extension FileLoadingEnvironment: DependencyKey {
 extension DependencyValues {
     
     var fileLoadingEnvironment: FileLoadingEnvironment {
-        get { self[FileLoadingEnvironment.self] }
+        get { FileLoadingEnvironment.liveValue }
         set { self[FileLoadingEnvironment.self] = newValue }
     }
 }

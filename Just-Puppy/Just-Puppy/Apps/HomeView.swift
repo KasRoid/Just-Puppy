@@ -32,8 +32,11 @@ extension HomeView {
                 }
                 .navigationTitle("Home")
                 .navigationBarTitleDisplayMode(.inline)
+                .onAppear { viewStore.send(.loadAnalyses) }
+                .onReceive(NotificationCenter.default.publisher(for: .changesInFiles)) { _ in
+                    viewStore.send(.loadAnalyses)
+                }
             }
-            .onAppear { viewStore.send(.loadAnalyses) }
         }
     }
     
@@ -47,12 +50,54 @@ extension HomeView {
     
     private func listView(_ viewStore: ViewStoreOf<MainReducer>) -> some View {
         ScrollView {
-            VStack(spacing: 0) {
-                ForEach(viewStore.analyses, id: \.self) { history in
-                    Text(history.date.yyyyMMddDashed)
+            VStack(spacing: 8) {
+                ForEach(viewStore.analyses, id: \.self) { analysis in
+                    analysisItemView(analysis)
                 }
             }
+            .padding(.horizontal, 16)
         }
+    }
+    
+    private func analysisItemView(_ analysis: Analysis) -> some View {
+        ZStack {
+            Image(uiImage: analysis.image)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(height: 210)
+                .frame(maxWidth: .infinity)
+                .clipped()
+            VStack {
+                Spacer().frame(height: 12)
+                HStack {
+                    Spacer()
+                    Image(systemName: "star")
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(Color.mainRed)
+                        .onTapGesture { print("Favorite") }
+                    Spacer().frame(width: 12)
+                }
+                Spacer()
+                HStack {
+                    Spacer().frame(width: 8)
+                    Text(analysis.emotion.rawValue.capitalized)
+                        .font(.system(size: 20, weight: .bold))
+                        .foregroundStyle(Color.mainRed)
+                    Spacer()
+                }
+                HStack {
+                    Spacer().frame(width: 8)
+                    Text(analysis.date.yyyyMMddDashed)
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundStyle(Color.mainRed)
+                    Spacer()
+                }
+                Spacer().frame(height: 12)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .contentShape(RoundedRectangle(cornerRadius: 16))
+        .onTapGesture { print("Detail") }
     }
 }
 

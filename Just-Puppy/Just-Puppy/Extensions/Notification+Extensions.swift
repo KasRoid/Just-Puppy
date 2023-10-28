@@ -9,4 +9,5 @@ import Foundation
 
 extension Notification.Name {
     static let goToRoot = Notification.Name("goToRoot")
+    static let changesInFiles = Notification.Name("changesInFiles")
 }

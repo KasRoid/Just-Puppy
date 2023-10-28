@@ -11,12 +11,15 @@ struct Analysis: Hashable, Codable {
     let image: UIImage
     let emotion: Emotion
     let probabilities: [String: Double]
-    let date = Date()
+    let date: Date
+    var isFavorite: Bool
     
     init(image: UIImage, emotion: Emotion, probabilities: [String: Double]) {
         self.image = image
         self.emotion = emotion
         self.probabilities = probabilities
+        self.date = Date()
+        self.isFavorite = false
     }
     
     init(from decoder: Decoder) throws {
@@ -28,6 +31,8 @@ struct Analysis: Hashable, Codable {
         image = decodedImage
         emotion = try container.decode(Emotion.self, forKey: .emotion)
         probabilities = try container.decode([String: Double].self, forKey: .probabilities)
+        date = try container.decode(Date.self, forKey: .date)
+        isFavorite = try container.decode(Bool.self, forKey: .isFavorite)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -36,6 +41,8 @@ struct Analysis: Hashable, Codable {
         try container.encode(imageData, forKey: .image)
         try container.encode(emotion, forKey: .emotion)
         try container.encode(probabilities, forKey: .probabilities)
+        try container.encode(date, forKey: .date)
+        try container.encode(isFavorite, forKey: .isFavorite)
     }
     
     enum CodingKeys: String, CodingKey {
@@ -43,5 +50,10 @@ struct Analysis: Hashable, Codable {
         case emotion
         case probabilities
         case date
+        case isFavorite
+    }
+    
+    mutating func update(isFavorite: Bool) {
+        self.isFavorite = isFavorite
     }
 }

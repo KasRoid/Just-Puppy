@@ -11,6 +11,7 @@ import SwiftUI
 struct ContentView: View {
     
     let store: StoreOf<ContentReducer>
+    let homeViewStore = StoreOf<MainReducer>(initialState: .init(), reducer: { MainReducer() })
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewState in
@@ -38,7 +39,7 @@ extension ContentView {
     }
     
     private func tabView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
-        JPTabView(selectedTab: viewState.binding(get: { $0.selectedTab }, 
+        JPTabView(selectedTab: viewState.binding(get: { $0.selectedTab },
                                                  send: ContentReducer.Action.select),
                   action: { viewState.send(.checkCameraAuthorization) },
                   isLoading: viewState.isCameraLoading) {
@@ -49,11 +50,9 @@ extension ContentView {
     }
     
     private func homeView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
-        HomeView(store: .init(initialState: .init(),
-                              reducer: { MainReducer() })
-        )
-        .tabBarItem(.home, selectedTab: viewState.binding(get: { $0.selectedTab },
-                                                          send: ContentReducer.Action.select))
+        HomeView(store: homeViewStore)
+            .tabBarItem(.home, selectedTab: viewState.binding(get: { $0.selectedTab },
+                                                              send: ContentReducer.Action.select))
     }
     
     private func favoritesView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
