@@ -1,15 +1,15 @@
 //
-//  MainReducer.swift
+//  FavoriteReducer.swift
 //  Just-Puppy
 //
-//  Created by Doyoung Song on 10/1/23.
+//  Created by Doyoung Song on 10/29/23.
 //
 
 import ComposableArchitecture
 import Foundation
 import OrderedCollections
 
-struct MainReducer: Reducer {
+struct FavoriteReducer: Reducer {
     
     struct State: Equatable {
         var analyses: OrderedSet<Analysis>
@@ -25,11 +25,12 @@ struct MainReducer: Reducer {
         case hideDetail
     }
     
-    var body: some ReducerOf<MainReducer> {
+    var body: some ReducerOf<FavoriteReducer> {
         Reduce { state, action in
             switch action {
             case .setAnalyses(let analyses):
-                state.analyses = analyses
+                let favoriteAnalyses = analyses.filter(\.isFavorite)
+                state.analyses = OrderedSet(favoriteAnalyses)
                 return .none
             case .toggleFavorite(var analysis):
                 let updatedAnalysis = analysis.update(isFavorite: !analysis.isFavorite)

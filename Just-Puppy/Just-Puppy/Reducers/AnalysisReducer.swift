@@ -10,9 +10,6 @@ import Foundation
 
 struct AnalysisReducer: Reducer {
     
-    @Dependency(\.fileSavingEnvironment) var fileSavingEnvironment
-    @Dependency(\.fileDeletionEnvironment) var fileDeletionEnvironment
-    
     struct State: Equatable {
         let analysis: Analysis?
     }
@@ -29,29 +26,15 @@ struct AnalysisReducer: Reducer {
             switch action {
             case .deleteAnalysis:
                 let analysis = state.analysis!
-                let event = fileDeletionEnvironment.analysis(analysis)
-                switch event {
-                case .success:
-                    NotificationCenter.default.post(name: .changesInFiles, object: nil)
-                    return .run {
-                        await $0(.goToRoot)
-                    }
-                case .failure(let error):
-                    print(error)
-                    return .none
+                AnalysisManager.shared.deleteAnalysis(analysis)
+                return .run {
+                    await $0(.goToRoot)
                 }
             case .saveAnalysis:
                 let analysis = state.analysis!
-                let event = fileSavingEnvironment.analysis(analysis)
-                switch event {
-                case .success:
-                    NotificationCenter.default.post(name: .changesInFiles, object: nil)
-                    return .run {
-                        await $0(.goToRoot)
-                    }
-                case .failure(let error):
-                    print(error)
-                    return .none
+                AnalysisManager.shared.saveAnalysis(analysis)
+                return .run {
+                    await $0(.goToRoot)
                 }
             case .goToRoot:
                 NotificationCenter.default.post(name: .goToRoot, object: nil)

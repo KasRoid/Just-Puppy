@@ -7,11 +7,11 @@
 
 import ComposableArchitecture
 import SwiftUI
+import OrderedCollections
 
 struct ContentView: View {
     
     let store: StoreOf<ContentReducer>
-    let homeViewStore = StoreOf<MainReducer>(initialState: .init(), reducer: { MainReducer() })
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewState in
@@ -49,14 +49,18 @@ extension ContentView {
         }
     }
     
+    @ViewBuilder
     private func homeView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
-        HomeView(store: homeViewStore)
+        let store = StoreOf<MainReducer>(initialState: .init(analyses: AnalysisManager.shared.analyses), reducer: { MainReducer() })
+        HomeView(store: store)
             .tabBarItem(.home, selectedTab: viewState.binding(get: { $0.selectedTab },
                                                               send: ContentReducer.Action.select))
     }
     
     private func favoritesView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
-        FavoritesView()
+        let analyses = OrderedSet(AnalysisManager.shared.analyses.filter(\.isFavorite))
+        let store = StoreOf<FavoriteReducer>(initialState: .init(analyses: analyses), reducer: { FavoriteReducer() })
+        return FavoritesView(store: store)
             .tabBarItem(.favorites, selectedTab: viewState.binding(get: { $0.selectedTab },
                                                                    send: ContentReducer.Action.select))
     }

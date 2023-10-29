@@ -27,6 +27,7 @@ struct SplashView: View {
         }
         .padding()
         .onAppear {
+            AnalysisManager.shared.loadFiles()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 initialized = true
             }

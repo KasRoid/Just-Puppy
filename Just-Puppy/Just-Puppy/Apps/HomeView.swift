@@ -32,10 +32,7 @@ extension HomeView {
                 }
                 .navigationTitle("Home")
                 .navigationBarTitleDisplayMode(.inline)
-                .onAppear { viewStore.send(.loadAnalyses) }
-                .onReceive(NotificationCenter.default.publisher(for: .changesInFiles)) { _ in
-                    viewStore.send(.loadAnalyses)
-                }
+                .onReceive(AnalysisManager.shared.$analyses) { viewStore.send(.setAnalyses($0)) }
                 .navigationDestination(isPresented: viewStore.binding(get: { $0.isAnalysisPresented },
                                                                       send: MainReducer.Action.hideDetail)) {
                     let analysis = viewStore.selectedAnalysis
@@ -62,7 +59,7 @@ extension HomeView {
                     Button {
                         viewStore.send(.showDetail(analysis))
                     } label: {
-                        analysisItemView(analysis)
+                        analysisItemView(with: analysis, viewStore: viewStore)
                     }
                 }
             }
@@ -70,7 +67,7 @@ extension HomeView {
         }
     }
     
-    private func analysisItemView(_ analysis: Analysis) -> some View {
+    private func analysisItemView(with analysis: Analysis, viewStore: ViewStoreOf<MainReducer>) -> some View {
         ZStack {
             Image(uiImage: analysis.image)
                 .resizable()
@@ -82,10 +79,10 @@ extension HomeView {
                 Spacer().frame(height: 12)
                 HStack {
                     Spacer()
-                    Image(systemName: "star")
+                    Image(systemName: analysis.isFavorite ? "star.fill" : "star")
                         .frame(width: 24, height: 24)
                         .foregroundStyle(Color.mainRed)
-                        .onTapGesture { print("Favorite") }
+                        .onTapGesture { viewStore.send(.toggleFavorite(analysis)) }
                     Spacer().frame(width: 12)
                 }
                 Spacer()
@@ -112,7 +109,7 @@ extension HomeView {
 
 // MARK: - Preview
 #Preview {
-    HomeView(store: .init(initialState: MainReducer.State(),
+    HomeView(store: .init(initialState: MainReducer.State(analyses: []),
                           reducer: { MainReducer() })
     )
 }

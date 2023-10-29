@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct Analysis: Hashable, Codable {
+struct Analysis: Hashable, Equatable, Codable {
     let image: UIImage
     let emotion: Emotion
     let probabilities: [String: Double]
@@ -53,7 +53,16 @@ struct Analysis: Hashable, Codable {
         case isFavorite
     }
     
-    mutating func update(isFavorite: Bool) {
+    mutating func update(isFavorite: Bool) -> Self {
         self.isFavorite = isFavorite
+        return self
     }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(date)
+    }
+    
+    static func == (lhs: Self, rhs: Self) -> Bool {
+         return lhs.date == rhs.date
+     }
 }
