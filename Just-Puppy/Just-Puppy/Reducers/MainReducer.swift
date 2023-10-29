@@ -13,12 +13,15 @@ struct MainReducer: Reducer {
     
     struct State: Equatable {
         var analyses: [Analysis] = []
+        var selectedAnalysis: Analysis?
+        var isAnalysisPresented = false
     }
     
     enum Action {
         case loadAnalyses
         case showAlbum
-        case showDetail
+        case showDetail(Analysis)
+        case hideDetail
     }
     
     var body: some ReducerOf<MainReducer> {
@@ -27,6 +30,13 @@ struct MainReducer: Reducer {
             case .loadAnalyses:
                 let analyses = fileLoadingEnvironment.analyses ?? []
                 state.analyses = analyses
+                return .none
+            case .showDetail(let analysis):
+                state.selectedAnalysis = analysis
+                state.isAnalysisPresented = true
+                return .none
+            case .hideDetail:
+                state.isAnalysisPresented = false
                 return .none
             default:
                 return .none

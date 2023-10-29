@@ -25,7 +25,6 @@ extension FileSavingEnvironment: DependencyKey {
             let filePath = directoryPath.appendingPathComponent(analysis.date.yyyyMMddHHmmssNoSeperator)
             let data = try JSONEncoder().encode(analysis)
             try data.write(to: filePath)
-            NotificationCenter.default.post(name: .changesInFiles, object: nil)
             return .success(())
         } catch {
             print(error, directoryPath.appendingPathComponent(analysis.date.yyyyMMddHHmmssNoSeperator))

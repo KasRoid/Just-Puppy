@@ -52,7 +52,7 @@ extension AnalysisView {
             Spacer().frame(height: 60)
             HStack(alignment: .top) {
                 Spacer().frame(width: 16)
-                JPNavigationBackButtonView(action: { dismiss() })
+                JPNavigationBackButtonView { dismiss() }
                 Spacer()
             }
             Spacer()
@@ -105,7 +105,7 @@ extension AnalysisView {
             Text("Get detailed information about your dog's expression and receive suggestions on how to improve it.")
                 .font(.system(size: 14))
                 .foregroundStyle(Color.gray)
-                
+            
         }
         .padding(.horizontal, 16)
     }
@@ -123,13 +123,13 @@ extension AnalysisView {
     
     private func deletePhotoButtonView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
         JPOutlinedButtonView(title: "Delete") {
-            if type == .result {
+            if type == .detail {
                 viewStore.send(.deleteAnalysis)
             } else {
-                dismiss()
+                viewStore.send(.goToRoot)
             }
         }
-            .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity)
     }
     
     private func savePhotoButtonView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {

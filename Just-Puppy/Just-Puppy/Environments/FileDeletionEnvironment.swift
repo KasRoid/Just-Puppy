@@ -22,7 +22,6 @@ extension FileDeletionEnvironment: DependencyKey {
         do {
             let filePath = directoryPath.appendingPathComponent(analysis.date.yyyyMMddHHmmssNoSeperator)
             try fileManager.removeItem(at: filePath)
-            NotificationCenter.default.post(name: .changesInFiles, object: nil)
             return .success(())
         } catch {
             return .failure(error)

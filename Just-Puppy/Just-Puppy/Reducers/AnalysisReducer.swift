@@ -30,11 +30,29 @@ struct AnalysisReducer: Reducer {
             case .deleteAnalysis:
                 let analysis = state.analysis!
                 let event = fileDeletionEnvironment.analysis(analysis)
-                return .run { await $0(.goToRoot) }
+                switch event {
+                case .success:
+                    NotificationCenter.default.post(name: .changesInFiles, object: nil)
+                    return .run {
+                        await $0(.goToRoot)
+                    }
+                case .failure(let error):
+                    print(error)
+                    return .none
+                }
             case .saveAnalysis:
                 let analysis = state.analysis!
                 let event = fileSavingEnvironment.analysis(analysis)
-                return .run { await $0(.goToRoot) }
+                switch event {
+                case .success:
+                    NotificationCenter.default.post(name: .changesInFiles, object: nil)
+                    return .run {
+                        await $0(.goToRoot)
+                    }
+                case .failure(let error):
+                    print(error)
+                    return .none
+                }
             case .goToRoot:
                 NotificationCenter.default.post(name: .goToRoot, object: nil)
                 return .none

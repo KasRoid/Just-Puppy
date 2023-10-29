@@ -36,6 +36,13 @@ extension HomeView {
                 .onReceive(NotificationCenter.default.publisher(for: .changesInFiles)) { _ in
                     viewStore.send(.loadAnalyses)
                 }
+                .navigationDestination(isPresented: viewStore.binding(get: { $0.isAnalysisPresented },
+                                                                      send: MainReducer.Action.hideDetail)) {
+                    let analysis = viewStore.selectedAnalysis
+                    let store: StoreOf<AnalysisReducer> = .init(initialState: .init(analysis: analysis),
+                                                                reducer: { AnalysisReducer() })
+                    AnalysisView(type: .detail, store: store)
+                }
             }
         }
     }
@@ -52,10 +59,8 @@ extension HomeView {
         ScrollView {
             VStack(spacing: 8) {
                 ForEach(viewStore.analyses, id: \.self) { analysis in
-                    NavigationLink {
-                        let store = StoreOf<AnalysisReducer>(initialState: AnalysisReducer.State(analysis: analysis), 
-                                                             reducer: { AnalysisReducer() })
-                        AnalysisView(type: .detail, store: store)
+                    Button {
+                        viewStore.send(.showDetail(analysis))
                     } label: {
                         analysisItemView(analysis)
                     }
