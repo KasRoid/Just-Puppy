@@ -61,6 +61,16 @@ extension AnalysisManager {
             print(error)
         }
     }
+    
+    func deleteAllAnalyses() {
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            guard let self else { return }
+            for analysis in analyses {
+                deleteFile(analysis)
+            }
+            analyses.removeAll()
+        }
+    }
 }
 
 // MARK: - Private Functions

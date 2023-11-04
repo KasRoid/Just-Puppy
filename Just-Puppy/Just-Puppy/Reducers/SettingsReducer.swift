@@ -10,16 +10,18 @@ import Foundation
 
 struct SettingsReducer: Reducer {
     
-    struct State: Equatable {
-        
-    }
+    struct State: Equatable {}
     
     enum Action {
-        
+        case deleteAll
     }
 
     var body: some ReducerOf<SettingsReducer> {
         Reduce { state, action in
+            switch action {
+            case .deleteAll:
+                AnalysisManager.shared.deleteAllAnalyses()
+            }
             return .none
         }
     }
