@@ -125,8 +125,9 @@ extension AnalysisView {
         JPOutlinedButtonView(title: "Delete") {
             if type == .detail {
                 viewStore.send(.deleteAnalysis)
+                dismiss()
             } else {
-                viewStore.send(.goToRoot)
+                NotificationCenter.default.post(name: .goToRoot, object: nil)
             }
         }
         .frame(maxWidth: .infinity)

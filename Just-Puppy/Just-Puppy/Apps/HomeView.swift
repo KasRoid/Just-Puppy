@@ -54,7 +54,7 @@ extension HomeView {
     
     private func listView(_ viewStore: ViewStoreOf<MainReducer>) -> some View {
         ScrollView {
-            VStack(spacing: 8) {
+            LazyVStack(spacing: 8) {
                 ForEach(viewStore.analyses, id: \.self) { analysis in
                     Button {
                         viewStore.send(.showDetail(analysis))
@@ -62,6 +62,7 @@ extension HomeView {
                         analysisItemView(with: analysis, viewStore: viewStore)
                     }
                 }
+                .animation(.easeIn, value: viewStore.analyses)
             }
             .padding(.horizontal, 16)
         }
