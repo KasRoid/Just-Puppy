@@ -5,10 +5,10 @@
 //  Created by Doyoung Song on 10/15/23.
 //
 
-enum Emotion: String, Codable {
+enum Emotion: String, CaseIterable, Codable {
     case happy
-    case angry
     case relaxed
     case sad
+    case angry
     case none
 }

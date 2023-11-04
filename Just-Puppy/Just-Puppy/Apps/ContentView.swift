@@ -46,13 +46,14 @@ extension ContentView {
             
             homeView(with: viewState)
             favoritesView(with: viewState)
+            statisticsView(with: viewState)
+            settingsView(with: viewState)
         }
     }
     
-    @ViewBuilder
     private func homeView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
         let store = StoreOf<MainReducer>(initialState: .init(analyses: AnalysisManager.shared.analyses), reducer: { MainReducer() })
-        HomeView(store: store)
+        return HomeView(store: store)
             .tabBarItem(.home, selectedTab: viewState.binding(get: { $0.selectedTab },
                                                               send: ContentReducer.Action.select))
     }
@@ -63,6 +64,20 @@ extension ContentView {
         return FavoritesView(store: store)
             .tabBarItem(.favorites, selectedTab: viewState.binding(get: { $0.selectedTab },
                                                                    send: ContentReducer.Action.select))
+    }
+    
+    private func statisticsView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
+        let store = StoreOf<StatisticsReducer>(initialState: .init(), reducer: { StatisticsReducer() })
+        return StatisticsView(store: store)
+            .tabBarItem(.statistics, selectedTab: viewState.binding(get: { $0.selectedTab },
+                                                                    send: ContentReducer.Action.select))
+    }
+    
+    private func settingsView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
+        let store = StoreOf<SettingsReducer>(initialState: .init(), reducer: { SettingsReducer() })
+        return SettingsView(store: store)
+            .tabBarItem(.settings, selectedTab: viewState.binding(get: { $0.selectedTab },
+                                                                  send: ContentReducer.Action.select))
     }
 }
 
