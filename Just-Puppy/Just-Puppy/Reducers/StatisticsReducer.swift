@@ -13,6 +13,8 @@ struct StatisticsReducer: Reducer {
     
     struct State: Equatable {
         var analyses: OrderedDictionary<Emotion, [Analysis]>
+        var selectedEmotion: Emotion?
+        var isListPresented = false
         
         init() {
             var analyses: OrderedDictionary<Emotion, [Analysis]> = [:]
@@ -24,11 +26,20 @@ struct StatisticsReducer: Reducer {
     }
     
     enum Action {
-        
+        case showList(Emotion)
+        case hideList
     }
 
     var body: some ReducerOf<StatisticsReducer> {
         Reduce { state, action in
+            switch action {
+            case .showList(let emotion):
+                state.selectedEmotion = emotion
+                state.isListPresented = !(state.analyses[emotion]?.isEmpty ?? true)
+            case .hideList:
+                state.isListPresented = false
+                state.selectedEmotion = nil
+            }
             return .none
         }
     }

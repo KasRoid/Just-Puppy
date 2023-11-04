@@ -18,27 +18,45 @@ struct StatisticsView: View {
                 List {
                     ForEach(viewStore.analyses.keys, id: \.self) { emotion in
                         let analyses = viewStore.analyses[emotion] ?? []
-                        item(with: emotion, analyses: analyses)
+                        item(with: emotion, analyses: analyses, viewStore: viewStore)
                     }
                 }
                 .scrollDisabled(true)
                 .navigationTitle("Statistics")
                 .navigationBarTitleDisplayMode(.inline)
+                .navigationDestination(isPresented: viewStore.binding(get: { $0.isListPresented },
+                                                                      send: StatisticsReducer.Action.hideList)) {
+                    if let emotion = viewStore.selectedEmotion {
+                        let analyses = viewStore.analyses[emotion] ?? []
+                        let store = StoreOf<StatisticsAnalysesReducer>(initialState: .init(emotion: emotion, analyses: analyses),
+                                                                       reducer: { StatisticsAnalysesReducer() })
+                        StatisticsAnalysesView(store: store)
+                    }
+                }
             }
         }
     }
+}
+
+// MARK: - UI
+extension StatisticsView {
     
-    private func item(with emotion: Emotion, analyses: [Analysis]) -> some View {
-        HStack(spacing: 8) {
-            Text(emotion.rawValue.capitalized)
-            Spacer()
-            Text("\(analyses.count)")
-            if !analyses.isEmpty {
-                Image(systemName: "chevron.right")
-                    .resizable()
-                    .frame(width: 6, height: 8)
-                    .foregroundStyle(Color(UIColor.lightGray))
+    private func item(with emotion: Emotion, analyses: [Analysis], viewStore: ViewStoreOf<StatisticsReducer>) -> some View {
+        Button(action: { viewStore.send(.showList(emotion)) }) {
+            HStack(spacing: 8) {
+                Text(emotion.rawValue.capitalized)
+                    .foregroundStyle(Color.primary)
+                Spacer()
+                Text("\(analyses.count)")
+                    .foregroundStyle(Color.primary)
+                if !analyses.isEmpty {
+                    Image(systemName: "chevron.right")
+                        .resizable()
+                        .frame(width: 6, height: 8)
+                        .foregroundStyle(Color(UIColor.lightGray))
+                }
             }
+            .contentShape(RoundedRectangle(cornerRadius: 8))
         }
     }
 }
