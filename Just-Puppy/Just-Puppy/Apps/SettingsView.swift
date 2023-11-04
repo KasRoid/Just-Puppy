@@ -13,10 +13,16 @@ struct SettingsView: View {
     let store: StoreOf<SettingsReducer>
     
     var body: some View {
-        NavigationStack {
-            Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            NavigationStack {
+                List {
+                    Text ("Delete all analyses")
+                        .foregroundStyle(Color.red)
+                }
+                .scrollDisabled(true)
                 .navigationTitle("Settings")
                 .navigationBarTitleDisplayMode(.inline)
+            }
         }
     }
 }
