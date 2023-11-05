@@ -10,6 +10,7 @@ import SwiftUI
 
 struct StatisticsAnalysesView: View {
     
+    @Environment(\.dismiss) var dismiss
     let store: StoreOf<StatisticsAnalysesReducer>
     
     var body: some View {
@@ -26,6 +27,12 @@ struct StatisticsAnalysesView: View {
             .listStyle(.plain)
             .navigationTitle(viewStore.emotion.rawValue.capitalized)
             .navigationBarTitleDisplayMode(.inline)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    JPNavigationBackButtonView { dismiss() }
+                }
+            }
             .navigationDestination(isPresented: viewStore.binding(get: { $0.isDetailPresented },
                                                                   send: StatisticsAnalysesReducer.Action.hideDetail)) {
                 analysisView(viewStore: viewStore)

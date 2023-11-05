@@ -22,7 +22,7 @@ struct AnalysisView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack {
-                navigationImageView(with: viewStore)
+                imageView(with: viewStore)
                 Spacer().frame(height: 20)
                 titleView(with: viewStore)
                 Spacer().frame(height: 40)
@@ -32,38 +32,22 @@ struct AnalysisView: View {
                 Spacer().frame(height: 20)
             }
         }
-        .toolbar(.hidden)
         .ignoresSafeArea(edges: .top)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                JPNavigationBackButtonView { dismiss() }
+            }
+        }
     }
 }
 
 // MARK: - UI
 extension AnalysisView {
-    
-    private func navigationImageView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
-        ZStack {
-            imageView(with: viewStore)
-            navigationView(with: viewStore)
-        }
-    }
-    
-    private func navigationView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
-        VStack {
-            Spacer().frame(height: 60)
-            HStack(alignment: .top) {
-                Spacer().frame(width: 16)
-                JPNavigationBackButtonView { dismiss() }
-                Spacer()
-            }
-            Spacer()
-        }
-        .frame(height: 300)
-    }
-    
-    @ViewBuilder
+
     private func imageView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
         let image = viewStore.analysis?.image ?? UIImage()
-        Image(uiImage: image)
+        return Image(uiImage: image)
             .resizable()
             .aspectRatio(contentMode: .fill)
             .frame(height: 300)
