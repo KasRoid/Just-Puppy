@@ -64,7 +64,11 @@ struct ContentReducer: Reducer {
                 state.alertMessage = nil
                 return .none
             case .select(let tab):
-                state.selectedTab = tab
+                if state.selectedTab == tab {
+                    NotificationCenter.default.post(name: .tabBarTapped, object: state.selectedTab)
+                } else {
+                    state.selectedTab = tab
+                }
                 return .none
             }
         }

@@ -28,7 +28,7 @@ struct ContentView: View {
 // MARK: - UI
 extension ContentView {
     
-    private func mainView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
+    private func mainView(with viewState: ViewStoreOf<ContentReducer>) -> some View {
         tabView(with: viewState)
             .fullScreenCover(isPresented: viewState.binding(get: { $0.isCameraPresented },
                                                             send: ContentReducer.Action.hideCamera)) {
@@ -38,12 +38,11 @@ extension ContentView {
             }
     }
     
-    private func tabView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
+    private func tabView(with viewState: ViewStoreOf<ContentReducer>) -> some View {
         JPTabView(selectedTab: viewState.binding(get: { $0.selectedTab },
                                                  send: ContentReducer.Action.select),
                   action: { viewState.send(.checkCameraAuthorization) },
                   isLoading: viewState.isCameraLoading) {
-            
             homeView(with: viewState)
             favoritesView(with: viewState)
             statisticsView(with: viewState)
@@ -51,14 +50,14 @@ extension ContentView {
         }
     }
     
-    private func homeView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
+    private func homeView(with viewState: ViewStoreOf<ContentReducer>) -> some View {
         let store = StoreOf<MainReducer>(initialState: .init(analyses: AnalysisManager.shared.analyses), reducer: { MainReducer() })
         return HomeView(store: store)
             .tabBarItem(.home, selectedTab: viewState.binding(get: { $0.selectedTab },
                                                               send: ContentReducer.Action.select))
     }
     
-    private func favoritesView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
+    private func favoritesView(with viewState: ViewStoreOf<ContentReducer>) -> some View {
         let analyses = OrderedSet(AnalysisManager.shared.analyses.filter(\.isFavorite))
         let store = StoreOf<FavoriteReducer>(initialState: .init(analyses: analyses), reducer: { FavoriteReducer() })
         return FavoritesView(store: store)
@@ -66,14 +65,14 @@ extension ContentView {
                                                                    send: ContentReducer.Action.select))
     }
     
-    private func statisticsView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
+    private func statisticsView(with viewState: ViewStoreOf<ContentReducer>) -> some View {
         let store = StoreOf<StatisticsReducer>(initialState: .init(), reducer: { StatisticsReducer() })
         return StatisticsView(store: store)
             .tabBarItem(.statistics, selectedTab: viewState.binding(get: { $0.selectedTab },
                                                                     send: ContentReducer.Action.select))
     }
     
-    private func settingsView(with viewState: ViewStore<ContentReducer.State, ContentReducer.Action>) -> some View {
+    private func settingsView(with viewState: ViewStoreOf<ContentReducer>) -> some View {
         let store = StoreOf<SettingsReducer>(initialState: .init(), reducer: { SettingsReducer() })
         return SettingsView(store: store)
             .tabBarItem(.settings, selectedTab: viewState.binding(get: { $0.selectedTab },

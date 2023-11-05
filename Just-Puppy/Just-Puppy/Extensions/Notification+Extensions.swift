@@ -8,5 +8,6 @@
 import Foundation
 
 extension Notification.Name {
+    static let tabBarTapped  = Notification.Name("tabBarTapped")
     static let goToRoot = Notification.Name("goToRoot")
 }

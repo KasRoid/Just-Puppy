@@ -11,6 +11,7 @@ import SwiftUI
 struct HomeView: View {
     
     let store: StoreOf<MainReducer>
+    @State private var buttonID = UUID()
     
     var body: some View {
         mainView
@@ -25,7 +26,7 @@ extension HomeView {
             NavigationStack {
                 Group {
                     if viewStore.analyses.isEmpty {
-                        noDataView
+                        noDataView(viewStore)
                     } else {
                         listView(viewStore)
                     }
@@ -41,8 +42,9 @@ extension HomeView {
         }
     }
     
-    private var noDataView: some View {
+    private func noDataView(_ viewStore: ViewStoreOf<MainReducer>) -> some View {
         VStack {
+            uploadPhotoView(viewStore)
             Spacer()
             Text("No Data")
             Spacer()
@@ -50,18 +52,34 @@ extension HomeView {
     }
     
     private func listView(_ viewStore: ViewStoreOf<MainReducer>) -> some View {
-        ScrollView {
-            LazyVStack(spacing: 8) {
-                ForEach(viewStore.analyses, id: \.self) { analysis in
-                    Button {
-                        viewStore.send(.showDetail(analysis))
-                    } label: {
-                        analysisItemView(with: analysis, viewStore: viewStore)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 8) {
+                    uploadPhotoView(viewStore)
+                        .id(buttonID)
+                    ForEach(viewStore.analyses, id: \.self) { analysis in
+                        Button {
+                            viewStore.send(.showDetail(analysis))
+                        } label: {
+                            analysisItemView(with: analysis, viewStore: viewStore)
+                        }
                     }
+                    .animation(.easeIn, value: viewStore.analyses)
                 }
-                .animation(.easeIn, value: viewStore.analyses)
+                .padding(.horizontal, 16)
             }
-            .padding(.horizontal, 16)
+            .onReceive(NotificationCenter.default.publisher(for: .tabBarTapped)) { output in
+                guard let tab = output.object as? JPTab, tab == .home else { return }
+                withAnimation {
+                    proxy.scrollTo(buttonID)
+                }
+            }
+        }
+    }
+    
+    private func uploadPhotoView(_ viewStore: ViewStoreOf<MainReducer>) -> some View {
+        JPOutlinedButtonView(title: "Upload a photo") {
+            viewStore.send(.showAlbum)
         }
     }
     

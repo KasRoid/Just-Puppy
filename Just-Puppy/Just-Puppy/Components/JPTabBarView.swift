@@ -89,8 +89,5 @@ extension JPTabBarView {
 
 // MARK: - Preview
 #Preview {
-    VStack {
-        Spacer()
-        JPTabBarView(tabs: [.home, .favorites, .statistics, .settings], selectedTab: .constant(.home), isLoading: true) {}
-    }
+    JPTabBarView(tabs: [.home, .favorites, .statistics, .settings], selectedTab: .constant(.home), isLoading: true) {}
 }
