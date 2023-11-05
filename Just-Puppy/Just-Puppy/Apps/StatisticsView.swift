@@ -18,7 +18,11 @@ struct StatisticsView: View {
                 List {
                     ForEach(viewStore.analyses.keys, id: \.self) { emotion in
                         let analyses = viewStore.analyses[emotion] ?? []
-                        item(with: emotion, analyses: analyses, viewStore: viewStore)
+                        if analyses.isEmpty {
+                            itemView(with: emotion, analyses: analyses, viewStore: viewStore)
+                        } else {
+                            itemButtonView(with: emotion, analyses: analyses, viewStore: viewStore)
+                        }
                     }
                 }
                 .scrollDisabled(true)
@@ -26,12 +30,7 @@ struct StatisticsView: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .navigationDestination(isPresented: viewStore.binding(get: { $0.isListPresented },
                                                                       send: StatisticsReducer.Action.hideList)) {
-                    if let emotion = viewStore.selectedEmotion {
-                        let analyses = viewStore.analyses[emotion] ?? []
-                        let store = StoreOf<StatisticsAnalysesReducer>(initialState: .init(emotion: emotion, analyses: analyses),
-                                                                       reducer: { StatisticsAnalysesReducer() })
-                        StatisticsAnalysesView(store: store)
-                    }
+                    statisticsAnalysisView(viewStore: viewStore)
                 }
             }
         }
@@ -41,22 +40,35 @@ struct StatisticsView: View {
 // MARK: - UI
 extension StatisticsView {
     
-    private func item(with emotion: Emotion, analyses: [Analysis], viewStore: ViewStoreOf<StatisticsReducer>) -> some View {
+    private func itemButtonView(with emotion: Emotion, analyses: [Analysis], viewStore: ViewStoreOf<StatisticsReducer>) -> some View {
         Button(action: { viewStore.send(.showList(emotion)) }) {
-            HStack(spacing: 8) {
-                Text(emotion.rawValue.capitalized)
-                    .foregroundStyle(Color.primary)
-                Spacer()
-                Text("\(analyses.count)")
-                    .foregroundStyle(Color.primary)
-                if !analyses.isEmpty {
-                    Image(systemName: "chevron.right")
-                        .resizable()
-                        .frame(width: 6, height: 8)
-                        .foregroundStyle(Color(UIColor.lightGray))
-                }
+            itemView(with: emotion, analyses: analyses, viewStore: viewStore)
+        }
+    }
+    
+    private func itemView(with emotion: Emotion, analyses: [Analysis], viewStore: ViewStoreOf<StatisticsReducer>) -> some View {
+        HStack(spacing: 8) {
+            Text(emotion.rawValue.capitalized)
+                .foregroundStyle(Color.primary)
+            Spacer()
+            Text("\(analyses.count)")
+                .foregroundStyle(Color.primary)
+            if !analyses.isEmpty {
+                Image(systemName: "chevron.right")
+                    .resizable()
+                    .frame(width: 6, height: 8)
+                    .foregroundStyle(Color(UIColor.lightGray))
             }
-            .contentShape(RoundedRectangle(cornerRadius: 8))
+        }
+    }
+    
+    @ViewBuilder
+    private func statisticsAnalysisView(viewStore: ViewStoreOf<StatisticsReducer>) -> some View {
+        if let emotion = viewStore.selectedEmotion {
+            let analyses = viewStore.analyses[emotion] ?? []
+            let store = StoreOf<StatisticsAnalysesReducer>(initialState: .init(emotion: emotion, analyses: analyses),
+                                                           reducer: { StatisticsAnalysesReducer() })
+            StatisticsAnalysesView(store: store)
         }
     }
 }
