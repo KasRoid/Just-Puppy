@@ -26,6 +26,10 @@ struct StatisticsAnalysesView: View {
             .listStyle(.plain)
             .navigationTitle(viewStore.emotion.rawValue.capitalized)
             .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(isPresented: viewStore.binding(get: { $0.isDetailPresented },
+                                                                  send: StatisticsAnalysesReducer.Action.hideDetail)) {
+                analysisView(viewStore: viewStore)
+            }
         }
     }
 }
@@ -34,14 +38,22 @@ struct StatisticsAnalysesView: View {
 extension StatisticsAnalysesView {
     
     private func item(with analysis: Analysis, viewStore: ViewStoreOf<StatisticsAnalysesReducer>) -> some View {
-        HStack {
-            Image(uiImage: analysis.image)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 48, height: 48)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-            Spacer()
-            Text(analysis.date.yyyyMMddDashed)
+        Button(action: { viewStore.send(.showDetail(analysis)) }) {
+            HStack {
+                Image(uiImage: analysis.image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 48, height: 48)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                Spacer()
+                Text(analysis.date.yyyyMMddDashed)
+            }
         }
+    }
+    
+    private func analysisView(viewStore: ViewStoreOf<StatisticsAnalysesReducer>) -> some View {
+        let analysis = viewStore.selectedAnalysis
+        let store: StoreOf<AnalysisReducer> = .init(initialState: .init(analysis: analysis), reducer: { AnalysisReducer() })
+        return AnalysisView(type: .detail, store: store)
     }
 }

@@ -35,10 +35,7 @@ extension HomeView {
                 .onReceive(AnalysisManager.shared.$analyses) { viewStore.send(.setAnalyses($0)) }
                 .navigationDestination(isPresented: viewStore.binding(get: { $0.isAnalysisPresented },
                                                                       send: MainReducer.Action.hideDetail)) {
-                    let analysis = viewStore.selectedAnalysis
-                    let store: StoreOf<AnalysisReducer> = .init(initialState: .init(analysis: analysis),
-                                                                reducer: { AnalysisReducer() })
-                    AnalysisView(type: .detail, store: store)
+                    analysisView(viewStore: viewStore)
                 }
             }
         }
@@ -105,6 +102,12 @@ extension HomeView {
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+    
+    private func analysisView(viewStore: ViewStoreOf<MainReducer>) -> some View {
+        let analysis = viewStore.selectedAnalysis
+        let store: StoreOf<AnalysisReducer> = .init(initialState: .init(analysis: analysis), reducer: { AnalysisReducer() })
+        return AnalysisView(type: .detail, store: store)
     }
 }
 
