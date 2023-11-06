@@ -30,7 +30,7 @@ struct PhotoReviewView: View {
                 let analysis = viewStore.analysis
                 let store: StoreOf<AnalysisReducer> = .init(initialState: .init(analysis: analysis),
                                                             reducer: { AnalysisReducer() })
-                AnalysisView(type: .result, store: store)
+                AnalysisView(type: .result, closeAction: .goToRoot, store: store)
             }
         }
     }

@@ -30,7 +30,6 @@ struct AnalysisReducer: Reducer {
             case .saveAnalysis:
                 let analysis = state.analysis!
                 AnalysisManager.shared.saveAnalysis(analysis)
-                NotificationCenter.default.post(name: .goToRoot, object: nil)
                 return .none
             case .showAlert:
                 return .none

@@ -54,7 +54,7 @@ extension FavoritesView {
             let analysis = viewStore.selectedAnalysis
             let store: StoreOf<AnalysisReducer> = .init(initialState: .init(analysis: analysis),
                                                         reducer: { AnalysisReducer() })
-            AnalysisView(type: .detail, store: store)
+            AnalysisView(type: .detail, closeAction: .dismiss, store: store)
         }
     }
     

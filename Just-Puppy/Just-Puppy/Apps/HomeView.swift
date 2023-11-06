@@ -6,12 +6,14 @@
 //
 
 import ComposableArchitecture
+import PhotosUI
 import SwiftUI
 
 struct HomeView: View {
     
     let store: StoreOf<MainReducer>
     @State private var buttonID = UUID()
+    @State var selectedItem: PhotosPickerItem?
     
     var body: some View {
         mainView
@@ -35,7 +37,7 @@ extension HomeView {
                 .navigationBarTitleDisplayMode(.inline)
                 .onReceive(AnalysisManager.shared.$analyses) { viewStore.send(.setAnalyses($0)) }
                 .navigationDestination(isPresented: viewStore.binding(get: { $0.isAnalysisPresented },
-                                                                      send: MainReducer.Action.hideDetail)) {
+                                                                      send: MainReducer.Action.hide)) {
                     analysisView(viewStore: viewStore)
                 }
             }
@@ -78,8 +80,17 @@ extension HomeView {
     }
     
     private func uploadPhotoView(_ viewStore: ViewStoreOf<MainReducer>) -> some View {
-        JPOutlinedButtonView(title: "Upload a photo") {
-            viewStore.send(.showAlbum)
+        PhotosPicker(selection: viewStore.binding(get: { $0.selectedItem }, send: MainReducer.Action.selectPhoto),
+                     matching: .images,
+                     photoLibrary: .shared()) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.mainRed, lineWidth: 1)
+                Text("Upload a photo")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(Color.mainRed)
+            }
+            .frame(height: 48)
         }
     }
     
@@ -125,7 +136,8 @@ extension HomeView {
     private func analysisView(viewStore: ViewStoreOf<MainReducer>) -> some View {
         let analysis = viewStore.selectedAnalysis
         let store: StoreOf<AnalysisReducer> = .init(initialState: .init(analysis: analysis), reducer: { AnalysisReducer() })
-        return AnalysisView(type: .detail, store: store)
+        let type = viewStore.type
+        return AnalysisView(type: type, closeAction: .dismiss, store: store)
     }
 }
 

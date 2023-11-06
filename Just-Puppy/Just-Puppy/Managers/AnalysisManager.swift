@@ -7,6 +7,7 @@
 
 import Foundation
 import OrderedCollections
+import SwiftUI
 
 final class AnalysisManager: ObservableObject {
     

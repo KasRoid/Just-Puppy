@@ -61,6 +61,6 @@ extension StatisticsAnalysesView {
     private func analysisView(viewStore: ViewStoreOf<StatisticsAnalysesReducer>) -> some View {
         let analysis = viewStore.selectedAnalysis
         let store: StoreOf<AnalysisReducer> = .init(initialState: .init(analysis: analysis), reducer: { AnalysisReducer() })
-        return AnalysisView(type: .detail, store: store)
+        return AnalysisView(type: .detail, closeAction: .dismiss, store: store)
     }
 }

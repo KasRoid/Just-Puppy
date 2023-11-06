@@ -17,6 +17,7 @@ struct AnalysisView: View {
     
     @Environment(\.dismiss) var dismiss
     let type: AnalysisViewType
+    let closeAction: CloseAction
     let store: StoreOf<AnalysisReducer>
     
     var body: some View {
@@ -107,23 +108,44 @@ extension AnalysisView {
     
     private func deletePhotoButtonView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
         JPOutlinedButtonView(title: "Delete") {
-            if type == .detail {
-                viewStore.send(.deleteAnalysis)
-                dismiss()
-            } else {
-                NotificationCenter.default.post(name: .goToRoot, object: nil)
-            }
+            viewStore.send(.deleteAnalysis)
+            close()
         }
         .frame(maxWidth: .infinity)
     }
     
     private func savePhotoButtonView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
-        JPFilledButtonView(title: "Save") { viewStore.send(.saveAnalysis) }
-            .frame(maxWidth: .infinity)
+        JPFilledButtonView(title: "Save") {
+            viewStore.send(.saveAnalysis)
+            close()
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+// MARK: - Private Functions
+extension AnalysisView {
+    
+    private func close() {
+        switch closeAction {
+        case .dismiss:
+            dismiss()
+        case .goToRoot:
+            NotificationCenter.default.post(name: .goToRoot, object: nil)
+        }
+    }
+}
+
+// MARK: - Enums
+extension AnalysisView {
+    
+    enum CloseAction {
+        case dismiss
+        case goToRoot
     }
 }
 
 #Preview {
-    AnalysisView(type: .detail, store: .init(initialState: AnalysisReducer.State(analysis: nil),
-                                             reducer: { AnalysisReducer() }))
+    AnalysisView(type: .detail, closeAction: .dismiss, store: .init(initialState: AnalysisReducer.State(analysis: nil),
+                                                                    reducer: { AnalysisReducer() }))
 }
