@@ -61,7 +61,7 @@ extension AnalysisView {
             VStack(alignment: .leading, spacing: 8) {
                 Text("Expression")
                     .font(.system(size: 20, weight: .bold))
-                Text(viewStore.analysis?.date.description ?? "No date")
+                Text(viewStore.analysis?.date.yyyyMMddHHmmss ?? "No date")
                     .font(.system(size: 12))
                     .foregroundStyle(Color.gray)
             }
@@ -80,6 +80,7 @@ extension AnalysisView {
         .padding(.horizontal, 16)
     }
     
+    @ViewBuilder
     private func descriptionView(with viewStore: ViewStoreOf<AnalysisReducer>) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -87,10 +88,12 @@ extension AnalysisView {
                     .font(.system(size: 16, weight: .bold))
                 Spacer()
             }
-            Text("Get detailed information about your dog's expression and receive suggestions on how to improve it.")
-                .font(.system(size: 14))
+            let description = viewStore.analysis?.emotion != Emotion.none
+            ? getDescription(with: viewStore)
+            : "Unable to analyze emotion."
+            Text(description)
+                .font(.system(size: 16))
                 .foregroundStyle(Color.gray)
-            
         }
         .padding(.horizontal, 16)
     }
@@ -120,6 +123,28 @@ extension AnalysisView {
             close()
         }
         .frame(maxWidth: .infinity)
+    }
+    
+    private func getDescription(with viewStore: ViewStoreOf<AnalysisReducer>) -> String {
+        let keys = viewStore.analysis?.probabilities.sorted { $0.value > $1.value }.map(\.key) ?? []
+        let firstKey = keys[0]
+        let secondKey = keys[1]
+        let firstProbability = viewStore.analysis?.probabilities[firstKey]
+        let firstProposition = getProposition(probability: firstProbability)
+        let secondProbability = viewStore.analysis?.probabilities[secondKey]
+        let secondProposition = getProposition(probability: secondProbability)
+        return "Your puppy is \(firstProposition)\(firstKey) and \(secondProposition)\(secondKey)"
+    }
+    
+    private func getProposition(probability: Double?) -> String {
+        guard let probability else { return "" }
+        if probability > 0.5 {
+            return "very "
+        } else if probability > 0.2 {
+            return "little "
+        } else {
+            return ""
+        }
     }
 }
 
