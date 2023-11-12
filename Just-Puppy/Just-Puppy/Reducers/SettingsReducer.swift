@@ -15,7 +15,7 @@ struct SettingsReducer: Reducer {
     enum Action {
         case deleteAll
     }
-
+    
     var body: some ReducerOf<SettingsReducer> {
         Reduce { state, action in
             switch action {

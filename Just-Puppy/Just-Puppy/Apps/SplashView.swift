@@ -14,18 +14,20 @@ struct SplashView: View {
     var body: some View {
         VStack {
             Spacer()
-            Image("logo")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
             Spacer().frame(height: 10)
-            Text("감정을 잇다")
-                .font(.title3)
-            Text("Just Connect.")
+            Image("logo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(height: 200)
+            Spacer().frame(height: 40)
+            Text("Just Pet")
                 .font(.largeTitle)
                 .bold()
+            Spacer().frame(height: 4)
+            Text("Identify your pet's emotion.")
+                .font(.title3)
             Spacer()
         }
-        .padding()
         .onAppear {
             AnalysisManager.shared.loadFiles()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
