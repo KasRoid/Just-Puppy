@@ -24,7 +24,6 @@ struct SplashView: View {
                 .font(.largeTitle)
                 .bold()
                 .frame(alignment: .center)
-                .background(Color.green)
             Spacer().frame(height: 8)
             Text("Identify your pet's emotion.")
                 .font(.title3)
