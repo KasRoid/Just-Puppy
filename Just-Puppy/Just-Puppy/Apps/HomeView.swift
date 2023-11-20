@@ -46,11 +46,11 @@ extension HomeView {
     
     private func noDataView(_ viewStore: ViewStoreOf<MainReducer>) -> some View {
         VStack {
+            Spacer()
             uploadPhotoView(viewStore)
             Spacer()
-            Text("No Data")
-            Spacer()
         }
+        .padding(.horizontal, 60)
     }
     
     private func listView(_ viewStore: ViewStoreOf<MainReducer>) -> some View {

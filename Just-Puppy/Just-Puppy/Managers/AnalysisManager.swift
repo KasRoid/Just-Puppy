@@ -33,8 +33,8 @@ extension AnalysisManager {
     }
     
     func deleteAnalysis(_ analysis: Analysis) {
-        analyses.remove(analysis)
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            self?.analyses.remove(analysis)
             self?.deleteFile(analysis)
         }
     }
@@ -69,7 +69,9 @@ extension AnalysisManager {
             for analysis in analyses {
                 deleteFile(analysis)
             }
-            analyses.removeAll()
+            DispatchQueue.main.async {
+                self.analyses.removeAll()
+            }
         }
     }
 }

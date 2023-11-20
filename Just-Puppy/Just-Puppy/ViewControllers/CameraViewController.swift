@@ -157,7 +157,7 @@ extension CameraViewController: AVCapturePhotoCaptureDelegate {
         guard let cgImage = photo.cgImageRepresentation() else { return }
         let image = UIImage(cgImage: cgImage)
         let rotatedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: .right)
-        guard let compressedData = rotatedImage.jpegData(compressionQuality: 0.1) else { return }
+        guard let compressedData = rotatedImage.jpegData(compressionQuality: 0.05) else { return }
         let compressedImage = UIImage(data: compressedData)
         viewStore.send(.capture(image: compressedImage))
     }

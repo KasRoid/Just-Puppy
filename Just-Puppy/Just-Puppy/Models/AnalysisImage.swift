@@ -13,7 +13,8 @@ struct AnalysisImage: Transferable {
     
     static var transferRepresentation: some TransferRepresentation {
         DataRepresentation(importedContentType: .image) { data in
-            guard let uiImage = UIImage(data: data) else {
+            guard let compressedData = UIImage(data: data)?.jpegData(compressionQuality: 0.05),
+                  let uiImage = UIImage(data: compressedData) else {
                 throw TransferError.importFailed
             }
             let image = Image(uiImage: uiImage)
