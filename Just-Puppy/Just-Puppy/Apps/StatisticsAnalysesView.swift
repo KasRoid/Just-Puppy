@@ -25,7 +25,7 @@ struct StatisticsAnalysesView: View {
                 }
             }
             .listStyle(.plain)
-            .navigationTitle(viewStore.emotion.rawValue.capitalized)
+            .navigationTitle(viewStore.emotion.title)
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden(true)
             .toolbar {

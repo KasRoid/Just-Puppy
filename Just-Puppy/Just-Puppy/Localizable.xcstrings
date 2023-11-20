@@ -4,6 +4,16 @@
     "%lld" : {
 
     },
+    "Angry" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "화남"
+          }
+        }
+      }
+    },
     "Are you sure you want to delete all analyses?" : {
       "localizations" : {
         "ko" : {
@@ -74,6 +84,17 @@
         }
       }
     },
+    "Happy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "행복함"
+          }
+        }
+      }
+    },
     "Home" : {
       "localizations" : {
         "ko" : {
@@ -99,21 +120,69 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "강아지의 기분을 알아보자"
+            "value" : "반려견 감정분석"
           }
         }
       }
     },
     "Just Emotion Detector" : {
-
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Just Emotion Detector"
+          }
+        }
+      }
     },
     "Just Pet Emotion Detector" : {
-      "extractionState" : "stale",
+      "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "강아지 감정 분석기"
+          }
+        }
+      }
+    },
+    "little " : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "조금 "
+          }
+        }
+      }
+    },
+    "None" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "없음"
+          }
+        }
+      }
+    },
+    "Relaxed" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "평온함"
+          }
+        }
+      }
+    },
+    "Sad" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "슬픔"
           }
         }
       }
@@ -138,12 +207,48 @@
         }
       }
     },
+    "Unable to analyze emotion." : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "감정을 분석할 수 없습니다."
+          }
+        }
+      }
+    },
     "Upload a photo" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "사진 업로드"
+          }
+        }
+      }
+    },
+    "very " : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매우 "
+          }
+        }
+      }
+    },
+    "Your puppy is %@%@ and %@%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Your puppy is %1$@%2$@ and %3$@%4$@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기분이 %1$@%2$@, %3$@%4$@"
           }
         }
       }

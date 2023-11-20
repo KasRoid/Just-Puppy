@@ -67,7 +67,7 @@ extension AnalysisView {
             }
             Spacer()
             VStack(spacing: 8) {
-                Text(viewStore.analysis?.emotion.rawValue.capitalized ?? "Error")
+                Text(viewStore.analysis?.emotion.title ?? "Error")
                     .font(.system(size: 14, weight: .bold))
                     .foregroundStyle(Color.white)
                     .padding(.horizontal, 12)
@@ -90,7 +90,7 @@ extension AnalysisView {
             }
             let description = viewStore.analysis?.emotion != Emotion.none
             ? getDescription(with: viewStore)
-            : "Unable to analyze emotion."
+            : String(localized: "Unable to analyze emotion.")
             Text(description)
                 .font(.system(size: 16))
                 .foregroundStyle(Color.gray)
@@ -133,15 +133,15 @@ extension AnalysisView {
         let firstProposition = getProposition(probability: firstProbability)
         let secondProbability = viewStore.analysis?.probabilities[secondKey]
         let secondProposition = getProposition(probability: secondProbability)
-        return "Your puppy is \(firstProposition)\(firstKey) and \(secondProposition)\(secondKey)"
+        return String(localized: "Your puppy is \(firstProposition)\(firstKey) and \(secondProposition)\(secondKey)")
     }
     
     private func getProposition(probability: Double?) -> String {
         guard let probability else { return "" }
         if probability > 0.5 {
-            return "very "
+            return String(localized: "very ")
         } else if probability > 0.2 {
-            return "little "
+            return String(localized: "little ")
         } else {
             return ""
         }

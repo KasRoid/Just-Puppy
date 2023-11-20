@@ -14,13 +14,13 @@ enum JPTab {
     var title: String {
         switch self {
         case .home:
-            return "Home"
+            return String(localized: "Home")
         case .favorites:
-            return "Favorites"
+            return String(localized: "Favorites")
         case .statistics:
-            return "Statistics"
+            return String(localized: "Statistics")
         case .settings:
-            return "Settings"
+            return String(localized: "Settings")
         }
     }
     

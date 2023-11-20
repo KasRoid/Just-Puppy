@@ -50,7 +50,7 @@ extension HomeView {
             uploadPhotoView(viewStore)
             Spacer()
         }
-        .padding(.horizontal, 60)
+        .padding(.horizontal, 80)
     }
     
     private func listView(_ viewStore: ViewStoreOf<MainReducer>) -> some View {
@@ -115,7 +115,7 @@ extension HomeView {
                 Spacer()
                 HStack {
                     Spacer().frame(width: 8)
-                    Text(analysis.emotion.rawValue.capitalized)
+                    Text(analysis.emotion.title)
                         .font(.system(size: 20, weight: .bold))
                         .foregroundStyle(Color.mainRed)
                     Spacer()

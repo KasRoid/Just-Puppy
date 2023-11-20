@@ -68,7 +68,7 @@ extension FavoritesView {
             
             Spacer().frame(width: 20)
             VStack(alignment: .leading, spacing: 8) {
-                Text(analysis.emotion.rawValue.capitalized)
+                Text(analysis.emotion.title)
                     .foregroundStyle(Color.primary)
                     .font(.system(size: 20, weight: .bold))
                 Text(analysis.date.yyyyMMddDashed)

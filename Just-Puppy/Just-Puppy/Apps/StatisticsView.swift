@@ -48,7 +48,7 @@ extension StatisticsView {
     
     private func itemView(with emotion: Emotion, analyses: [Analysis], viewStore: ViewStoreOf<StatisticsReducer>) -> some View {
         HStack(spacing: 8) {
-            Text(emotion.rawValue.capitalized)
+            Text(emotion.title)
                 .foregroundStyle(Color.primary)
             Spacer()
             Text("\(analyses.count)")
