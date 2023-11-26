@@ -37,6 +37,7 @@ struct Analysis: Hashable, Equatable, Codable {
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        print(image)
         let imageData = image.pngData()!
         try container.encode(imageData, forKey: .image)
         try container.encode(emotion, forKey: .emotion)

@@ -22,10 +22,14 @@ extension AnalysisManager {
     
     func saveAnalysis(_ analysis: Analysis) {
         if analyses.contains(analysis), let index = analyses.firstIndex(of: analysis) {
-            analyses.remove(analysis)
-            analyses.insert(analysis, at: index)
+            DispatchQueue.main.async { [weak self] in
+                self?.analyses.remove(analysis)
+                self?.analyses.insert(analysis, at: index)
+            }
         } else {
-            analyses.insert(analysis, at: 0)
+            DispatchQueue.main.async { [weak self] in
+                self?.analyses.insert(analysis, at: 0)
+            }
         }
         DispatchQueue.global(qos: .userInteractive).async { [weak self] in
             self?.saveFile(analysis)
@@ -33,8 +37,10 @@ extension AnalysisManager {
     }
     
     func deleteAnalysis(_ analysis: Analysis) {
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+        DispatchQueue.main.async { [weak self] in
             self?.analyses.remove(analysis)
+        }
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
             self?.deleteFile(analysis)
         }
     }

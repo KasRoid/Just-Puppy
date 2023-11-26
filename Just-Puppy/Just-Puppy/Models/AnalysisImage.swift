@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AnalysisImage: Transferable {
     
-    let image: Image
+    let image: UIImage
     
     static var transferRepresentation: some TransferRepresentation {
         DataRepresentation(importedContentType: .image) { data in
@@ -17,8 +17,8 @@ struct AnalysisImage: Transferable {
                   let uiImage = UIImage(data: compressedData) else {
                 throw TransferError.importFailed
             }
-            let image = Image(uiImage: uiImage)
-            return AnalysisImage(image: image)
+//            let image = Image(uiImage: uiImage)
+            return AnalysisImage(image: uiImage)
         }
     }
 }

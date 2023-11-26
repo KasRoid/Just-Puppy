@@ -68,8 +68,7 @@ extension MainReducer {
         return .run { send in
             do {
                 guard let image = try await item?.loadTransferable(type: AnalysisImage.self)?.image else { return }
-                let uiImage = await image.asUIImage()
-                await send(.analyze(uiImage))
+                await send(.analyze(image))
             } catch {
                 print(error)
             }
